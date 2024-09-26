@@ -17,6 +17,12 @@ const ProtectedRoutes = () => {
             <PageWithNav login />
         }
       />
+      <Route
+        path="/signup"
+        element={
+            <PageWithNav signup />
+        }
+      />
     </Routes>
   );
 };
