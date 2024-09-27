@@ -4,7 +4,6 @@ import {
   Image,
   Heading,
   Input,
-  Button,
   Link,
   Textarea,
   Text,
@@ -17,14 +16,17 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { FiUpload, FiEye, FiEyeOff } from "react-icons/fi";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/LogoNotYellow.png";
+import CustomButton from "./Button";
+import { createUser } from "../api-client/ApiClient";
+import sha256 from "crypto-js/sha256";
 
 const Signup = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,10 +36,10 @@ const Signup = () => {
   const [preferences, setPreferences] = useState("");
   const [preferencesList, setPreferencesList] = useState([]);
   const [imageBlob, setImageBlob] = useState(null);
-
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [signupError, setSignupError] = useState("");
 
   const handleAddPreference = () => {
     if (preferences) {
@@ -53,6 +55,7 @@ const Signup = () => {
   };
 
   const handleNameChange = (e) => setName(e.target.value);
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,6 +87,7 @@ const Signup = () => {
   };
 
   const handleBioChange = (e) => setBio(e.target.value);
+
   const handlePhoneChange = (e) => {
     setPhone(e.target.value);
     const phoneRegex = /^\d{10}$/;
@@ -102,6 +106,26 @@ const Signup = () => {
         setImageBlob(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSignup = async () => {
+    const hashedPassword = sha256(password).toString();
+    const userRequest = {
+      name,
+      email,
+      password: hashedPassword,
+      bio,
+      phone,
+      preferences: preferencesList,
+    };
+
+    const result = await createUser(userRequest);
+    if (result.error) {
+      setSignupError(result.error);
+    } else {
+      localStorage.setItem("token", result.token);
+      navigate("/");
     }
   };
 
@@ -133,14 +157,21 @@ const Signup = () => {
         />
       </Heading>
 
-      <Card p="8" boxShadow="xl" bg={theme.colors.accent}>
+      <Card
+        p="8"
+        boxShadow="xl"
+        bg={theme.colors.accent}
+        color={theme.colors.text}
+      >
         <Stack spacing={4}>
-          <Input 
-            placeholder="Name" 
-            type="text" 
-            value={name} 
+          {signupError && <Text color="red.500">{signupError}</Text>}
+          <Input
+            placeholder="Name"
+            type="text"
+            value={name}
             onChange={handleNameChange}
-            bg={theme.colors.background} 
+            bg={theme.colors.background}
+            _placeholder={{ color: theme.colors.textLight }}
           />
           <Input
             placeholder="Email Address"
@@ -148,6 +179,7 @@ const Signup = () => {
             value={email}
             onChange={handleEmailChange}
             bg={theme.colors.background}
+            _placeholder={{ color: theme.colors.textLight }}
           />
           {emailError && <Text color="red.500">{emailError}</Text>}
 
@@ -158,6 +190,7 @@ const Signup = () => {
               value={password}
               onChange={handlePasswordChange}
               bg={theme.colors.background}
+              _placeholder={{ color: theme.colors.textLight }}
             />
             <InputRightElement width="3rem">
               <IconButton
@@ -177,6 +210,7 @@ const Signup = () => {
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
               bg={theme.colors.background}
+              _placeholder={{ color: theme.colors.textLight }}
             />
             <InputRightElement width="3rem">
               <IconButton
@@ -192,11 +226,12 @@ const Signup = () => {
           </InputGroup>
           {passwordError && <Text color="red.500">{passwordError}</Text>}
 
-          <Textarea 
-            placeholder="Bio (e.g., I travel on weekends and would love to meet people and share rides.)" 
-            value={bio} 
-            onChange={handleBioChange} 
-            bg={theme.colors.background} 
+          <Textarea
+            placeholder="Bio (e.g., I travel on weekends and would love to meet people and share rides.)"
+            value={bio}
+            onChange={handleBioChange}
+            bg={theme.colors.background}
+            _placeholder={{ color: theme.colors.textLight }}
           />
 
           <Stack direction="row" align="center">
@@ -205,17 +240,27 @@ const Signup = () => {
               value={preferences}
               onChange={(e) => setPreferences(e.target.value)}
               bg={theme.colors.background}
+              _placeholder={{ color: theme.colors.textLight }}
             />
-            <Button onClick={handleAddPreference}>Add</Button>
+            <CustomButton
+              isDisabled={!preferences}
+              onClick={handleAddPreference}
+              size="md"
+            >
+              Add
+            </CustomButton>
           </Stack>
 
           <Stack direction="column" spacing={2}>
             {preferencesList.map((pref, index) => (
               <Stack key={index} direction="row" justify="space-between">
                 <Text>{pref}</Text>
-                <Button size="xs" onClick={() => handleRemovePreference(index)}>
+                <CustomButton
+                  size="xs"
+                  onClick={() => handleRemovePreference(index)}
+                >
                   Remove
-                </Button>
+                </CustomButton>
               </Stack>
             ))}
           </Stack>
@@ -228,6 +273,7 @@ const Signup = () => {
               value={phone}
               onChange={handlePhoneChange}
               bg={theme.colors.background}
+              _placeholder={{ color: theme.colors.textLight }}
             />
           </InputGroup>
           {phoneError && <Text color="red.500">{phoneError}</Text>}
@@ -251,6 +297,7 @@ const Signup = () => {
               onChange={handleImageChange}
               bg={theme.colors.background}
               pl="12"
+              _placeholder={{ color: theme.colors.textLight }}
             />
           </InputGroup>
 
@@ -265,19 +312,13 @@ const Signup = () => {
             />
           )}
 
-          <Button
-            bg={theme.colors.secondary}
-            color={theme.colors.text}
-            _hover={{
-              bg: theme.colors.tertiary,
-              boxShadow: "inset 0 0 5px rgba(0, 0, 0, 0.5)",
-            }}
-            boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+          <CustomButton
             size="md"
             isDisabled={!isFormValid}
+            onClick={handleSignup}
           >
             Sign Up
-          </Button>
+          </CustomButton>
 
           <Text textAlign="left">
             Already have an account?{" "}

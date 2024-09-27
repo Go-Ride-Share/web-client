@@ -1,20 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Stack,
   Image,
   Heading,
   Input,
-  Button,
   Link,
   Text,
   Card,
   useTheme,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/LogoNotYellow.png";
+import CustomButton from "./Button";
+import { login } from "../api-client/ApiClient";
+import SHA256 from "crypto-js/sha256";
 
 const Login = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [error, setError] = useState("");
+
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  const handleLogin = async () => {
+    const hashedPassword = SHA256(password).toString();
+    const result = await login({ email, password: hashedPassword });
+    if (result.error) {
+      setError(result.error);
+      setToken("");
+    } else {
+      setToken(result.token);
+      setError("");
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/");
+    }
+  }, [token, navigate]);
 
   return (
     <Stack spacing={6} maxW="md" mx="auto" mt="8" fontFamily="CaviarDreams">
@@ -32,19 +61,31 @@ const Login = () => {
         />
       </Heading>
 
-      <Card p="8" boxShadow="xl" bg={theme.colors.accent}>
+      <Card
+        p="8"
+        boxShadow="xl"
+        bg={theme.colors.accent}
+        color={theme.colors.text}
+      >
         <Stack spacing={6}>
+          {error && <Text color="red.500">{error}</Text>}
           <Input
             placeholder="Email Address"
             type="email"
+            value={email}
+            onChange={handleEmailChange}
             bg={theme.colors.background}
+            _placeholder={{ color: theme.colors.textLight }}
           />
           <Input
             placeholder="Password"
             type="password"
+            value={password}
+            onChange={handlePasswordChange}
             bg={theme.colors.background}
+            _placeholder={{ color: theme.colors.textLight }}
           />
-          <Button
+          <CustomButton
             bg={theme.colors.secondary}
             color={theme.colors.text}
             _hover={{
@@ -53,9 +94,11 @@ const Login = () => {
             }}
             boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
             size="md"
+            isDisabled={!email || !password}
+            onClick={handleLogin}
           >
             Login
-          </Button>
+          </CustomButton>
           <Text textAlign="left">
             Don't have an account?{" "}
             <Link as={RouterLink} to="/signup" color="blue.500">

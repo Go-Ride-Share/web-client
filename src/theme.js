@@ -8,6 +8,7 @@ const theme = extendTheme({
         accent: '#fefaee',
         background: '#fffefa',
         text: '#373737',
+        textLight: '#adadad'
     },
     styles: {
         global: {
