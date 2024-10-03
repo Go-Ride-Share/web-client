@@ -10,8 +10,8 @@ describe('ApiClient', () => {
 	describe('createUser', () => {
 		test('should return tokens on successful user creation', async () => {
 			const mockResponse = {
-				Logic_token: 'logicToken123',
-				Db_token: 'dbToken456',
+				logic_token: 'logicToken123',
+				db_token: 'dbToken456',
 			};
 
 			// Mocking the fetch API response
@@ -70,8 +70,8 @@ describe('ApiClient', () => {
 	describe('login', () => {
 		test('should return tokens on successful login', async () => {
 			const mockResponse = {
-				Logic_token: 'logicToken123',
-				Db_token: 'dbToken456',
+				logic_token: 'logicToken123',
+				db_token: 'dbToken456',
 			};
 
 			global.fetch = jest.fn(() =>
