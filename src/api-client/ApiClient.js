@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = "https://test-dp-funcion.azurewebsites.net/api";
+
 
 async function handleResponse(response) {
 	if (!response.ok) {
@@ -20,7 +22,7 @@ export async function createUser(createUserRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.Logic_token, db_token: result.Db_token };
+	return { logic_token: result.logic_token, db_token: result.db_token };
 }
 
 export async function login(loginRequest) {
@@ -35,7 +37,7 @@ export async function login(loginRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.Logic_token, db_token: result.Db_token };
+	return { logic_token: result.logic_token, db_token: result.db_token };
 }
 
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
