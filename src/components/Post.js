@@ -31,6 +31,14 @@ const Post = () => {
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
   const [postError, setPostError] = useState("");
+  const [mapSelection, setMapSelection] = useState("");
+  const [mapDisabled, setMapDisabled] = useState(true);
+
+  const handleNameChange = (e) => setName(e.target.value);
+  const handleStartChange = (e) => setStart(e.target.value);
+  const handleEndChange = (e) => setEnd(e.target.value);
+  const handleDescChange = (e) => setDesc(e.target.value);
+  const handleDepartureChange = (e) => setDate(e.target.value);
 
   const [departureDate, setDate] = useState(null);
   let formattedDate = "Select a date"
@@ -38,11 +46,40 @@ const Post = () => {
     formattedDate = format(departureDate, 'PP');
   }
 
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleStartChange = (e) => setStart(e.target.value);
-  const handleEndChange = (e) => setEnd(e.target.value);
-  const handleDescChange = (e) => setDesc(e.target.value);
-  const handleDepartureChange = (e) => setDate(e.target.value);
+  const mapUses = {
+    END: 'EndLocation',
+    START: 'StartLocation',
+    INACTIVE: '',
+};
+
+  const handleSelectEndLocation = () => {
+    if (mapSelection !== mapUses.END) {
+      setMapDisabled(false)
+      setMapSelection(mapUses.END)
+    } else {
+      setMapDisabled(true)
+      setMapSelection(mapUses.INACTIVE)
+    }
+  };
+
+  const handleSelectStartLocation = () => {
+    if (mapSelection !== mapUses.START) {
+      setMapDisabled(false)
+      setMapSelection(mapUses.START)
+    } else {
+      setMapDisabled(true)
+      setMapSelection(mapUses.INACTIVE)
+    }
+  };
+
+  const useMap = (event) => {
+    if (mapSelection === mapUses.END){
+      setEnd("Lat: " + event.latLng.lat().toFixed(2) + ", Long:" + event.latLng.lng().toFixed(2))
+    }
+    if (mapSelection === mapUses.START){
+      setStart("Lat: " + event.latLng.lat().toFixed(2) + ", Long:" + event.latLng.lng().toFixed(2))
+    }
+  }
 
   const handlePriceChange = (e) => {
     setPrice(e.target.value);
@@ -105,6 +142,8 @@ const Post = () => {
             <InputGroup>
               <Input
                 placeholder="Start Location"
+                readOnly={true}
+                value={startLocation}
                 bg={theme.colors.background}
                 onChange={handleStartChange}
                 _placeholder={{ color: theme.colors.textLight }}
@@ -114,6 +153,8 @@ const Post = () => {
                   size="sm"
                   icon={<FaMapMarkerAlt  />}
                   variant="link"
+                  color={mapSelection === mapUses.START ? "red" : "gray"}
+                  onClick={handleSelectStartLocation}
                 />
               </InputRightElement>
             </InputGroup>
@@ -121,6 +162,8 @@ const Post = () => {
             <InputGroup>
               <Input
                 placeholder="End Location"
+                value={endLocation}
+                readOnly={true}
                 onChange={handleEndChange}
                 bg={theme.colors.background}
                 _placeholder={{ color: theme.colors.textLight }}
@@ -130,6 +173,8 @@ const Post = () => {
                   size="sm"
                   icon={<FaMapMarkerAlt  />}
                   variant="link"
+                  color={mapSelection === mapUses.END ? "red" : "gray"}
+                  onClick={handleSelectEndLocation}
                 />
               </InputRightElement>
             </InputGroup>
@@ -138,6 +183,7 @@ const Post = () => {
               <Input
                 onChange={handleDepartureChange}
                 value={formattedDate}
+                readOnly={true}
                 bg={theme.colors.background}
                 _placeholder={{ color: theme.colors.textLight }}
               />
@@ -177,7 +223,10 @@ const Post = () => {
 
           </Stack>
           <Stack spacing={4} width="lg" >
-            <GoogleMapComponent/>
+            <GoogleMapComponent
+              mapDisabled={mapDisabled}
+              clicked={useMap}
+              />
             <Textarea
               placeholder="Descripton"
               bg={theme.colors.background}
@@ -196,7 +245,7 @@ const Post = () => {
               <CustomButton
                 size="md"
                 isDisabled={!isFormValid}
-                onClick={createPost}
+                onClick={handlePost}
               >
                 Create Post
               </CustomButton>
