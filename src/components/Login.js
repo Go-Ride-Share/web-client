@@ -33,6 +33,7 @@ const Login = () => {
 		} else {
 			localStorage.setItem('logic_token', result.logic_token);
 			localStorage.setItem('db_token', result.db_token);
+			localStorage.setItem('user_id', result.user_id);
 			setError('');
 			navigate('/');
 		}
