@@ -9,13 +9,14 @@ const Nav = () => {
 
 	const isLoggedIn = () => {
 		return (
-			localStorage.getItem('logic_token') && localStorage.getItem('db_token')
+			localStorage.getItem('logic_token') && localStorage.getItem('db_token') && localStorage.getItem('user_id')
 		);
 	};
 
 	const handleSignOut = () => {
 		localStorage.removeItem('logic_token');
 		localStorage.removeItem('db_token');
+		localStorage.removeItem('user_id');
 		navigate('/');
 	};
 

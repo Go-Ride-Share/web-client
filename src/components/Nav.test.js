@@ -51,6 +51,7 @@ describe('Nav component', () => {
 		window.localStorage.getItem.mockImplementation((key) => {
 			if (key === 'logic_token') return 'some_logic_token';
 			if (key === 'db_token') return 'some_db_token';
+			if (key === 'user_id') return 'some_user_id';
 			return null;
 		});
 
@@ -70,6 +71,7 @@ describe('Nav component', () => {
 		window.localStorage.getItem.mockImplementation((key) => {
 			if (key === 'logic_token') return 'some_logic_token';
 			if (key === 'db_token') return 'some_db_token';
+			if (key === 'user_id') return 'some_user_id';
 			return null;
 		});
 
@@ -85,6 +87,7 @@ describe('Nav component', () => {
 
 		expect(localStorage.removeItem).toHaveBeenCalledWith('logic_token');
 		expect(localStorage.removeItem).toHaveBeenCalledWith('db_token');
+		expect(localStorage.removeItem).toHaveBeenCalledWith('user_id');
 
 		expect(mockNavigate).toHaveBeenCalledWith('/');
 	});
