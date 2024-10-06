@@ -75,6 +75,7 @@ describe('Login Component', () => {
 		ApiClient.login.mockResolvedValueOnce({
 			logic_token: 'logicToken123',
 			db_token: 'dbToken456',
+			user_id: 'user1'
 		});
 
 		render(
@@ -102,6 +103,10 @@ describe('Login Component', () => {
 			expect(localStorage.setItem).toHaveBeenCalledWith(
 				'db_token',
 				'dbToken456'
+			);
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'user_id',
+				'user1'
 			);
 			expect(mockNavigate).toHaveBeenCalledWith('/');
 		});
