@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Stack,
   Input,
+  Heading,
   Textarea,
   Text,
   Card,
@@ -28,19 +29,22 @@ const Post = () => {
   const [startLocation, setStart] = useState("");
   const [endLocation, setEnd] = useState("");
   const [description, setDesc] = useState("");
-  const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState("");
+  const [seatError, setSeatError] = useState("");
   const [postError, setPostError] = useState("");
   const [mapSelection, setMapSelection] = useState("");
+  const [price, setPrice] = useState(0);
+  const [seats, setSeats] = useState(0);
   const [mapDisabled, setMapDisabled] = useState(true);
+  const [departureDate, setDate] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const handleNameChange = (e) => setName(e.target.value);
   const handleStartChange = (e) => setStart(e.target.value);
   const handleEndChange = (e) => setEnd(e.target.value);
   const handleDescChange = (e) => setDesc(e.target.value);
   const handleDepartureChange = (e) => setDate(e.target.value);
-
-  const [departureDate, setDate] = useState(null);
+  
   let formattedDate = "Select a date"
   if (departureDate) {
     formattedDate = format(departureDate, 'PP');
@@ -91,6 +95,16 @@ const Post = () => {
     }
   };
 
+  const handleSeatsChange = (e) => {
+    setSeats(e.target.value);
+    const priceRegex = /^\d*$/;
+    if (!priceRegex.test(e.target.value)) {
+      setSeatError("Seats are invalid");
+    } else {
+      setSeatError("");
+    }
+  };
+
   const handlePost = async () => {
 
     const userRequest = {
@@ -100,7 +114,7 @@ const Post = () => {
       description,
       departureDate,
       price,
-      priceError,
+      seats,
     };
 
     const result = await createPost(userRequest);
@@ -115,7 +129,8 @@ const Post = () => {
     endLocation &&
     departureDate && 
     description && 
-    price
+    price &&
+    seats
 
   return (
     <Stack spacing={6} mt="8" mx="auto" fontFamily="CaviarDreams">
@@ -125,9 +140,14 @@ const Post = () => {
         boxShadow="xl"
         w="fit-content"
         mx="auto"
+        align="center"
         bg={theme.colors.accent}
         color={theme.colors.text}
       >
+        <Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams" marginBottom="15px">
+          Create a Post
+        </Heading>
+
         <Stack direction="row" spacing={4} >
           <Stack spacing={4} width="xs" >
 
@@ -188,10 +208,12 @@ const Post = () => {
                 _placeholder={{ color: theme.colors.textLight }}
               />
               <InputRightElement width="3rem">
+                <CiCalendarDate onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} />
                 <Popup
-                  trigger={<CiCalendarDate  />} 
                   modal
                   closeOnDocumentClick
+                  onClose={() => setOpen(false)}
+                  open={open}
                   contentStyle={{
                     display: "flex",
                     justifyContent: "center",
@@ -199,34 +221,37 @@ const Post = () => {
                     height: "400px",
                   }}
                 >
-                  <div style={{ display: "flex",  alignItems: "center" }}>
+                  <Stack spacing={4} width="lg" align="center">
                     <DayPicker
                       mode="single"
                       selected={departureDate}
                       onSelect={setDate}
                     />
-                  </div>
+                    <CustomButton
+                      size="md"
+                      onClick={() => {
+                        setOpen(false)
+                      }}
+                    >
+                      Select
+                    </CustomButton>
+                  </Stack>
                 </Popup>
               </InputRightElement>
             </InputGroup>
 
             <Flex align="center">
-              <h4 style={{ marginRight: '18px' }}>Price($):</h4>
-              <Input
-                onChange={handlePriceChange}
-                placeholder="50.00"
-                bg={theme.colors.background}
-                _placeholder={{ color: theme.colors.textLight }}
-              />
-            </Flex>
-            {priceError && <Text color="red.500">{priceError}</Text>}
+                <h4 style={{ marginRight: '18px' }}>Number of Seats:</h4>
+                <Input
+                  onChange={handleSeatsChange}
+                  placeholder="4"
+                  width="55%"
+                  bg={theme.colors.background}
+                  _placeholder={{ color: theme.colors.textLight }}
+                />
+              </Flex>
+              {seatError && <Text color="red.500">{seatError}</Text>}
 
-          </Stack>
-          <Stack spacing={4} width="lg" >
-            <GoogleMapComponent
-              mapDisabled={mapDisabled}
-              clicked={useMap}
-              />
             <Textarea
               placeholder="Descripton"
               bg={theme.colors.background}
@@ -234,13 +259,25 @@ const Post = () => {
               _placeholder={{ color: theme.colors.textLight }}
             />
 
-            <Stack direction="row" spacing={4} >
-              <CustomButton
-                size="md"
-                isDisabled={true}
-              >
-                Delete Post
-              </CustomButton>
+          </Stack>
+          <Stack spacing={4} width="lg" align="center">
+            <GoogleMapComponent
+              mapDisabled={mapDisabled}
+              clicked={useMap}
+              />
+
+            <Stack direction="row" spacing={14}  >
+
+              <Flex align="center">
+                <h4 style={{ marginRight: '18px' }}>Price($):</h4>
+                <Input
+                  onChange={handlePriceChange}
+                  placeholder="50.00"
+                  bg={theme.colors.background}
+                  _placeholder={{ color: theme.colors.textLight }}
+                />
+              </Flex>
+              {priceError && <Text color="red.500">{priceError}</Text>}
 
               <CustomButton
                 size="md"

@@ -9,7 +9,7 @@ const containerStyle = {
 // Winnipeg
 const center = {
   lat: 49.8954,
-  lng: 97.1385,
+  lng: -97.1385,
 };
 
 const GoogleMapComponent = ({mapDisabled, clicked}) => {  
