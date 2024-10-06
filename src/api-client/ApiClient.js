@@ -20,7 +20,7 @@ export async function createUser(createUserRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token };
+	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id };
 }
 
 export async function login(loginRequest) {
@@ -35,17 +35,19 @@ export async function login(loginRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token };
+	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id };
 }
 
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
 	const logicToken = localStorage.getItem('logic_token');
 	const dbToken = localStorage.getItem('db_token');
+	const userId = localStorage.getItem('user_id');
 
 	const headers = {
 		...options.headers,
 		Authorization: `Bearer ${logicToken}`,
 		'X-Db-Token': dbToken,
+		'X-User-ID': userId,
 	};
 
 	const response = await fetch(`${API_BASE_URL}${endpoint}`, {

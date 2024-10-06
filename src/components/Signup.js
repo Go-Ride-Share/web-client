@@ -33,26 +33,11 @@ const Signup = () => {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [bio, setBio] = useState('');
 	const [phone, setPhone] = useState('');
-	// const [preferences, setPreferences] = useState("");
-	// const [preferencesList, setPreferencesList] = useState([]);
 	const [imageBlob, setImageBlob] = useState(null);
 	const [passwordError, setPasswordError] = useState('');
 	const [emailError, setEmailError] = useState('');
 	const [phoneError, setPhoneError] = useState('');
 	const [signupError, setSignupError] = useState('');
-
-	// const handleAddPreference = () => {
-	//   if (preferences) {
-	//     setPreferencesList([...preferencesList, preferences]);
-	//     setPreferences("");
-	//   }
-	// };
-
-	// const handleRemovePreference = (index) => {
-	//   const newList = [...preferencesList];
-	//   newList.splice(index, 1);
-	//   setPreferencesList(newList);
-	// };
 
 	const handleNameChange = (e) => setName(e.target.value);
 
@@ -117,7 +102,6 @@ const Signup = () => {
 			password: hashedPassword,
 			bio,
 			phone,
-			// preferences: preferencesList,
 		};
 
 		const result = await createUser(userRequest);
@@ -126,6 +110,7 @@ const Signup = () => {
 		} else {
 			localStorage.setItem('logic_token', result.logic_token);
 			localStorage.setItem('db_token', result.db_token);
+			localStorage.setItem('user_id', result.user_id);
 			navigate('/');
 		}
 	};

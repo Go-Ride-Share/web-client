@@ -12,6 +12,7 @@ describe('ApiClient', () => {
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
+				user_id: 'user1'
 			};
 
 			// Mocking the fetch API response
@@ -28,7 +29,6 @@ describe('ApiClient', () => {
 				password: 'hashedPassword123',
 				bio: 'test bio',
 				phone: '1234567890',
-				preferences: ['preference1', 'preference2'],
 			};
 
 			const result = await createUser(createUserRequest);
@@ -43,6 +43,7 @@ describe('ApiClient', () => {
 			expect(result).toEqual({
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
+				user_id: 'user1'
 			});
 		});
 
@@ -72,6 +73,7 @@ describe('ApiClient', () => {
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
+				user_id: 'user1'
 			};
 
 			global.fetch = jest.fn(() =>
@@ -101,6 +103,7 @@ describe('ApiClient', () => {
 			expect(result).toEqual({
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
+				user_id: 'user1'
 			});
 		});
 
@@ -132,6 +135,7 @@ describe('ApiClient', () => {
 				getItem: jest.fn((key) => {
 					if (key === 'logic_token') return 'logicToken123';
 					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
 					return null;
 				}),
 			};
@@ -157,6 +161,7 @@ describe('ApiClient', () => {
 				headers: {
 					Authorization: 'Bearer logicToken123',
 					'X-Db-Token': 'dbToken456',
+					'X-User-ID': 'user1'
 				},
 			});
 			expect(result).toEqual(mockResponse);
@@ -170,6 +175,7 @@ describe('ApiClient', () => {
 				getItem: jest.fn((key) => {
 					if (key === 'logic_token') return 'logicToken123';
 					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
 					return null;
 				}),
 			};
