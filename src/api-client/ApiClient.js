@@ -56,17 +56,21 @@ export async function makeAuthenticatedRequest(endpoint, options = {}) {
 	return handleResponse(response);
 }
 
-export async function createPost(createPostRequest) {
-  const response = await fetch(`${API_BASE_URL}/CreatePost`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(createPostRequest),
-  });
-  const result = await handleResponse(response);
-  if (result.error) {
-    return { error: result.error };
-  }
-  return { token: result.token };
+export async function savePost(savePostRequest) {
+
+	const response = makeAuthenticatedRequest(
+		`${API_BASE_URL}/SavePost`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(savePostRequest),
+		}
+	);
+	const result = await handleResponse(response);
+	if (result.error) {
+		return { error: result.error };
+	}
+	return { token: result.token };
 }

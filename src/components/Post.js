@@ -15,10 +15,9 @@ import {
 import CustomButton from "./Button";
 import GoogleMapComponent from "./Map";
 import Popup from 'reactjs-popup';
-import { createPost } from "../api-client/ApiClient";
+import { savePost } from "../api-client/ApiClient";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { CiCalendarDate } from "react-icons/ci";
-import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import 'reactjs-popup/dist/index.css';
@@ -47,14 +46,14 @@ const Post = () => {
   
   let formattedDate = "Select a date"
   if (departureDate) {
-    formattedDate = format(departureDate, 'PP');
+    formattedDate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(departureDate);
   }
 
   const mapUses = {
     END: 'EndLocation',
     START: 'StartLocation',
     INACTIVE: '',
-};
+  };
 
   const handleSelectEndLocation = () => {
     if (mapSelection !== mapUses.END) {
@@ -117,7 +116,7 @@ const Post = () => {
       seats,
     };
 
-    const result = await createPost(userRequest);
+    const result = await savePost(userRequest);
     if (result.error) {
       setPostError(result.error);
     }
@@ -208,7 +207,10 @@ const Post = () => {
                 _placeholder={{ color: theme.colors.textLight }}
               />
               <InputRightElement width="3rem">
-                <CiCalendarDate onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} />
+                <CiCalendarDate 
+                  onClick={() => setOpen(true)} 
+                  style={{ cursor: 'pointer' }} 
+                  data-testid="calandar-button"/>
                 <Popup
                   modal
                   closeOnDocumentClick
@@ -284,7 +286,7 @@ const Post = () => {
                 isDisabled={!isFormValid}
                 onClick={handlePost}
               >
-                Create Post
+                Save Post
               </CustomButton>
             </Stack>
             {postError && <Text color="red.500">{postError}</Text>}
