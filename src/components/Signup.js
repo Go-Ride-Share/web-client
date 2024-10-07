@@ -33,7 +33,7 @@ const Signup = () => {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [bio, setBio] = useState('');
 	const [phone, setPhone] = useState('');
-	const [imageBlob, setImageBlob] = useState(null);
+	const [photo, setPhoto] = useState(null);
 	const [passwordError, setPasswordError] = useState('');
 	const [emailError, setEmailError] = useState('');
 	const [phoneError, setPhoneError] = useState('');
@@ -83,12 +83,12 @@ const Signup = () => {
 		}
 	};
 
-	const handleImageChange = (e) => {
+	const handlePhotoChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
-				setImageBlob(reader.result);
+				setPhoto(reader.result);
 			};
 			reader.readAsDataURL(file);
 		}
@@ -102,6 +102,7 @@ const Signup = () => {
 			password: hashedPassword,
 			bio,
 			phone,
+			photo,
 		};
 
 		const result = await createUser(userRequest);
@@ -111,6 +112,7 @@ const Signup = () => {
 			localStorage.setItem('logic_token', result.logic_token);
 			localStorage.setItem('db_token', result.db_token);
 			localStorage.setItem('user_id', result.user_id);
+			localStorage.setItem('user_photo', result.photo);
 			navigate('/');
 		}
 	};
@@ -221,37 +223,6 @@ const Signup = () => {
 						bg={theme.colors.background}
 						_placeholder={{ color: theme.colors.textLight }}
 					/>
-					{/* 
-          <Stack direction="row" align="center">
-            <Input
-              placeholder="Preferences"
-              value={preferences}
-              onChange={(e) => setPreferences(e.target.value)}
-              bg={theme.colors.background}
-              _placeholder={{ color: theme.colors.textLight }}
-            />
-            <CustomButton
-              isDisabled={!preferences}
-              onClick={handleAddPreference}
-              size="md"
-            >
-              Add
-            </CustomButton>
-          </Stack>
-
-          <Stack direction="column" spacing={2}>
-            {preferencesList.map((pref, index) => (
-              <Stack key={index} direction="row" justify="space-between">
-                <Text>{pref}</Text>
-                <CustomButton
-                  size="xs"
-                  onClick={() => handleRemovePreference(index)}
-                >
-                  Remove
-                </CustomButton>
-              </Stack>
-            ))}
-          </Stack> */}
 
 					<InputGroup>
 						<InputLeftAddon>+1</InputLeftAddon>
@@ -282,16 +253,16 @@ const Signup = () => {
 							placeholder="Upload Picture"
 							type="file"
 							accept="image/*"
-							onChange={handleImageChange}
+							onChange={handlePhotoChange}
 							bg={theme.colors.background}
 							pl="12"
 							_placeholder={{ color: theme.colors.textLight }}
 						/>
 					</InputGroup>
 
-					{imageBlob && (
+					{photo && (
 						<Image
-							src={imageBlob}
+							src={photo}
 							alt="Uploaded Preview"
 							boxSize="100px"
 							objectFit="cover"

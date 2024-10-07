@@ -20,7 +20,7 @@ export async function createUser(createUserRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id };
+	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id, photo: result.photo };
 }
 
 export async function login(loginRequest) {
@@ -35,7 +35,7 @@ export async function login(loginRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id };
+	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id, photo: result.photo };
 }
 
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
