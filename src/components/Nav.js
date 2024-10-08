@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Flex, Box, Button, Link, Image, useTheme } from '@chakra-ui/react';
+import {
+	Flex,
+	Box,
+	Button,
+	Link,
+	Image,
+	useTheme,
+	IconButton,
+	Menu,
+	MenuButton,
+	MenuList,
+	MenuItem,
+} from '@chakra-ui/react';
+import { EditIcon } from '@chakra-ui/icons';
 import logo from '../assets/images/LogoNotBlack.png';
+import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
 const Nav = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const [userPhoto, setUserPhoto] = useState(
+		localStorage.getItem('user_photo')
+	);
 
 	const isLoggedIn = () => {
 		return (
-			localStorage.getItem('logic_token') && localStorage.getItem('db_token') && localStorage.getItem('user_id')
+			localStorage.getItem('logic_token') &&
+			localStorage.getItem('db_token') &&
+			localStorage.getItem('user_id')
 		);
 	};
 
@@ -17,8 +36,21 @@ const Nav = () => {
 		localStorage.removeItem('logic_token');
 		localStorage.removeItem('db_token');
 		localStorage.removeItem('user_id');
+		localStorage.removeItem('user_photo');
 		navigate('/');
 	};
+
+	useEffect(() => {
+		const updatePhoto = () => {
+			const storedPhoto = localStorage.getItem('user_photo');
+			setUserPhoto(storedPhoto);
+		};
+		updatePhoto();
+		window.addEventListener('storage', updatePhoto);
+		return () => {
+			window.removeEventListener('storage', updatePhoto);
+		};
+	}, []); 
 
 	return (
 		<Flex
@@ -53,20 +85,62 @@ const Nav = () => {
 					Post a Ride
 				</Link>
 				{isLoggedIn() ? (
-					<Button
-						onClick={handleSignOut}
-						bg={theme.colors.secondary}
-						color={theme.colors.text}
-						_hover={{
-							bg: theme.colors.tertiary,
-							boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
-						}}
-						mr="4"
-						width="8rem"
-						boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
-					>
-						Sign Out
-					</Button>
+					<>
+						<Button
+							onClick={handleSignOut}
+							bg={theme.colors.secondary}
+							color={theme.colors.text}
+							_hover={{
+								bg: theme.colors.tertiary,
+								boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+							}}
+							mr="4"
+							width="8rem"
+							boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+						>
+							Sign Out
+						</Button>
+						<Menu>
+							<MenuButton
+								as={IconButton}
+								aria-label="Options"
+								icon={
+									<Image
+										src={userPhoto || DefaultPhoto}
+										boxSize="30px"
+										objectFit="cover"
+										borderRadius="full"
+										quality={100}
+									/>
+								}
+								bg={theme.colors.secondary}
+								color={theme.colors.text}
+								_hover={{
+									bg: theme.colors.tertiary,
+									boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+								}}
+								boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+							/>
+							<MenuList
+								bg={theme.colors.tertiary}
+								color={theme.colors.text}
+								boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+							>
+								<MenuItem
+									bg={theme.colors.secondary}
+									color={theme.colors.text}
+									_hover={{
+										bg: theme.colors.tertiary,
+										boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+									}}
+									boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+									icon={<EditIcon />}
+								>
+									Edit Account
+								</MenuItem>
+							</MenuList>
+						</Menu>
+					</>
 				) : (
 					<Button
 						as={RouterLink}

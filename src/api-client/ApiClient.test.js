@@ -1,6 +1,7 @@
 import { createUser, login, makeAuthenticatedRequest } from './ApiClient';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 
 describe('ApiClient', () => {
 	beforeEach(() => {
@@ -12,7 +13,7 @@ describe('ApiClient', () => {
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
-				user_id: 'user1'
+				user_id: 'user1',
 			};
 
 			// Mocking the fetch API response
@@ -33,7 +34,7 @@ describe('ApiClient', () => {
 
 			const result = await createUser(createUserRequest);
 
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/CreateUser`, {
+			expect(fetch).toHaveBeenCalledWith(`${API_AUTH_URL}/CreateUser`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ describe('ApiClient', () => {
 			expect(result).toEqual({
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
-				user_id: 'user1'
+				user_id: 'user1',
 			});
 		});
 
@@ -73,7 +74,7 @@ describe('ApiClient', () => {
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
-				user_id: 'user1'
+				user_id: 'user1',
 			};
 
 			global.fetch = jest.fn(() =>
@@ -91,7 +92,7 @@ describe('ApiClient', () => {
 			const result = await login(loginRequest);
 
 			expect(fetch).toHaveBeenCalledWith(
-				`${API_BASE_URL}/VerifyLoginCredentials`,
+				`${API_AUTH_URL}/VerifyLoginCredentials`,
 				{
 					method: 'POST',
 					headers: {
@@ -103,7 +104,7 @@ describe('ApiClient', () => {
 			expect(result).toEqual({
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
-				user_id: 'user1'
+				user_id: 'user1',
 			});
 		});
 
@@ -161,7 +162,7 @@ describe('ApiClient', () => {
 				headers: {
 					Authorization: 'Bearer logicToken123',
 					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1'
+					'X-User-ID': 'user1',
 				},
 			});
 			expect(result).toEqual(mockResponse);
