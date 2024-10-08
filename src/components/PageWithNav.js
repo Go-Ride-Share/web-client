@@ -6,6 +6,7 @@ import Nav from './Nav';
 import Login from './Login';
 import Signup from './Signup';
 import UserProfile from './UserProfile';
+import Post from './Post';
 
 const PageWithNav = ({ login, signup, user, post }) => {
 	return (

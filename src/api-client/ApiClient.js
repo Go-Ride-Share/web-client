@@ -1,6 +1,5 @@
 const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 
 async function handleResponse(response) {
 	if (!response.ok) {

@@ -22,7 +22,7 @@ const Nav = () => {
 	const navigate = useNavigate();
 	const [userPhoto, setUserPhoto] = useState(
 		localStorage.getItem('user_photo')
-	); 
+	);
 
 	const isLoggedIn = () => {
 		return (
@@ -42,19 +42,15 @@ const Nav = () => {
 
 	useEffect(() => {
 		const updatePhoto = () => {
-			setUserPhoto(localStorage.getItem('user_photo'));
+			const storedPhoto = localStorage.getItem('user_photo');
+			setUserPhoto(storedPhoto);
 		};
-
+		updatePhoto();
 		window.addEventListener('storage', updatePhoto);
-
 		return () => {
 			window.removeEventListener('storage', updatePhoto);
 		};
-	}, []);
-
-	useEffect(() => {
-		setUserPhoto(localStorage.getItem('user_photo'));
-	}, [isLoggedIn()]);
+	}, []); 
 
 	return (
 		<Flex
