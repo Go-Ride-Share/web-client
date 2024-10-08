@@ -21,7 +21,9 @@ jobs:
           lfs: false
           
       - name: Set environment variable
-        run: echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> $GITHUB_ENV
+        run: |
+          echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> $GITHUB_ENV
+          echo "REACT_APP_API_AUTH_URL=${{ secrets.REACT_APP_API_AUTH_URL }}" >> $GITHUB_ENV
         
       - name: Build And Deploy
         id: builddeploy
