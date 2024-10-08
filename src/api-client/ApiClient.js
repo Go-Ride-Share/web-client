@@ -1,4 +1,5 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 
 async function handleResponse(response) {
 	if (!response.ok) {
@@ -9,7 +10,7 @@ async function handleResponse(response) {
 }
 
 export async function createUser(createUserRequest) {
-	const response = await fetch(`${API_BASE_URL}/CreateUser`, {
+	const response = await fetch(`${API_AUTH_URL}/CreateUser`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -24,7 +25,7 @@ export async function createUser(createUserRequest) {
 }
 
 export async function login(loginRequest) {
-	const response = await fetch(`${API_BASE_URL}/VerifyLoginCredentials`, {
+	const response = await fetch(`${API_AUTH_URL}/VerifyLoginCredentials`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -56,4 +57,22 @@ export async function makeAuthenticatedRequest(endpoint, options = {}) {
 	});
 
 	return handleResponse(response);
+}
+
+export async function savePost(savePostRequest) {
+
+	const response = makeAuthenticatedRequest(
+		`/SavePost`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(savePostRequest),
+		}
+	);
+	if (response.error) {
+		return { error: response.error };
+	}
+	return { token: response.token };
 }
