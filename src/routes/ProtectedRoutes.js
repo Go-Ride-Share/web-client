@@ -9,6 +9,7 @@ const ProtectedRoutes = () => {
 			<Route path="/login" element={<PageWithNav login />} />
 			<Route path="/signup" element={<PageWithNav signup />} />
 			<Route path="/user" element={<PageWithNav user />} />
+      <Route path="/post" element={<PageWithNav post />} />
 		</Routes>
 	);
 };
