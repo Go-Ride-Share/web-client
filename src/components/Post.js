@@ -25,6 +25,10 @@ import 'reactjs-popup/dist/index.css';
 const Post = () => { 
   const theme = useTheme();
   const [postName, setName] = useState("");
+  const [originLng, setStartLng] = useState("");
+  const [originLat, setStartLat] = useState("");
+  const [destinationLng, setEndLng] = useState("");
+  const [destinationLat, setEndLat] = useState("");
   const [startLocation, setStart] = useState("");
   const [endLocation, setEnd] = useState("");
   const [description, setDesc] = useState("");
@@ -33,7 +37,7 @@ const Post = () => {
   const [postError, setPostError] = useState("");
   const [mapSelection, setMapSelection] = useState("");
   const [price, setPrice] = useState(0);
-  const [seats, setSeats] = useState(0);
+  const [seatsAvailable, setSeats] = useState(0);
   const [mapDisabled, setMapDisabled] = useState(true);
   const [departureDate, setDate] = useState(null);
   const [open, setOpen] = useState(false);
@@ -78,9 +82,13 @@ const Post = () => {
   const useMap = (event) => {
     if (mapSelection === mapUses.END){
       setEnd("Lat: " + event.latLng.lat().toFixed(2) + ", Long:" + event.latLng.lng().toFixed(2))
+      setEndLat(event.latLng.lat().toFixed(2))
+      setEndLng(event.latLng.lng().toFixed(2))
     }
     if (mapSelection === mapUses.START){
       setStart("Lat: " + event.latLng.lat().toFixed(2) + ", Long:" + event.latLng.lng().toFixed(2))
+      setStartLat(event.latLng.lat().toFixed(2))
+      setStartLng(event.latLng.lng().toFixed(2))
     }
   }
 
@@ -108,12 +116,14 @@ const Post = () => {
 
     const userRequest = {
       postName,
-      startLocation,
-      endLocation,
+      originLng,
+      originLat,
+      destinationLng,
+      destinationLat,
       description,
       departureDate,
       price,
-      seats,
+      seatsAvailable,
     };
 
     const result = await savePost(userRequest);
@@ -124,12 +134,12 @@ const Post = () => {
 
   const isFormValid =
     postName &&
-    startLocation &&
-    endLocation &&
+    originLng && originLat &&
+    destinationLng && destinationLat &&
     departureDate && 
     description && 
     price &&
-    seats
+    seatsAvailable
 
   return (
     <Stack spacing={6} mt="8" mx="auto" fontFamily="CaviarDreams">
