@@ -43,9 +43,9 @@ const UserProfile = () => {
 	const [phoneError, setPhoneError] = useState('');
 	const [isChanged, setIsChanged] = useState(false);
 
-	useEffect(() => {
-		const fetchUserData = async () => {
-			setLoading(true);
+	const fetchUserData = async () => {
+		setLoading(true);
+		try {
 			const result = await getUser();
 			if (result.error) {
 				setError(result.error);
@@ -53,8 +53,13 @@ const UserProfile = () => {
 				setUserData(result);
 				setPhotoPreview(result.photo);
 			}
-			setLoading(false);
-		};
+		} catch (err) {
+			setError('Failed to fetch user data');
+		}
+		setLoading(false);
+	};
+
+	useEffect(() => {
 		fetchUserData();
 	}, []);
 
@@ -114,14 +119,11 @@ const UserProfile = () => {
 			setError(result.error);
 		} else {
 			setSuccessMessage('User information updated successfully.');
-			const updatedUserData = await getUser();
-			if (updatedUserData.error) {
-				setError(updatedUserData.error);
-			} else {
-				setUserData(updatedUserData);
-				setPhotoPreview(updatedUserData.photo);
-				setIsChanged(false);
+			if (userData.photo) {
+				localStorage.setItem('user_photo', userData.photo);
 			}
+			fetchUserData();
+			setIsChanged(false);
 		}
 	};
 

@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
 	Flex,
@@ -20,7 +20,9 @@ import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 const Nav = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const userPhoto = localStorage.getItem('user_photo');
+	const [userPhoto, setUserPhoto] = useState(
+		localStorage.getItem('user_photo')
+	); 
 
 	const isLoggedIn = () => {
 		return (
@@ -37,6 +39,22 @@ const Nav = () => {
 		localStorage.removeItem('user_photo');
 		navigate('/');
 	};
+
+	useEffect(() => {
+		const updatePhoto = () => {
+			setUserPhoto(localStorage.getItem('user_photo'));
+		};
+
+		window.addEventListener('storage', updatePhoto);
+
+		return () => {
+			window.removeEventListener('storage', updatePhoto);
+		};
+	}, []);
+
+	useEffect(() => {
+		setUserPhoto(localStorage.getItem('user_photo'));
+	}, [isLoggedIn()]);
 
 	return (
 		<Flex
@@ -93,11 +111,10 @@ const Nav = () => {
 								icon={
 									<Image
 										src={userPhoto || DefaultPhoto}
-										boxSize="40px"
+										boxSize="30px"
 										objectFit="cover"
 										borderRadius="full"
 										quality={100}
-										mb={2}
 									/>
 								}
 								bg={theme.colors.secondary}

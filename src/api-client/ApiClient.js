@@ -47,7 +47,13 @@ export async function getUser() {
 		if (result.error) {
 			return { error: result.error };
 		}
-		return {result};
+		return {
+			name: result.name,
+			email: result.email,
+			bio: result.bio,
+			phone: result.phone,
+			photo: result.photo,
+	};
 	} catch (error) {
 		return { error: 'Failed to fetch user data' };
 	}
