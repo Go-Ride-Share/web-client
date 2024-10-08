@@ -42,11 +42,13 @@ export async function login(loginRequest) {
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
 	const logicToken = localStorage.getItem('logic_token');
 	const dbToken = localStorage.getItem('db_token');
+	const userId = localStorage.getItem('user_id');
 
 	const headers = {
 		...options.headers,
 		Authorization: `Bearer ${logicToken}`,
 		'X-Db-Token': dbToken,
+		'X-User-ID': userId,
 	};
 
 	const response = await fetch(`${API_BASE_URL}${endpoint}`, {

@@ -15,6 +15,7 @@ import {
 import CustomButton from "./Button";
 import GoogleMapComponent from "./Map";
 import Popup from 'reactjs-popup';
+import { useNavigate } from 'react-router-dom';
 import { savePost } from "../api-client/ApiClient";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { CiCalendarDate } from "react-icons/ci";
@@ -24,16 +25,15 @@ import 'reactjs-popup/dist/index.css';
 
 const Post = () => { 
   const theme = useTheme();
+  const navigate = useNavigate();
   const [postName, setName] = useState("");
-  const [originLng, setStartLng] = useState("");
-  const [originLat, setStartLat] = useState("");
-  const [destinationLng, setEndLng] = useState("");
-  const [destinationLat, setEndLat] = useState("");
+  const [originLng, setStartLng] = useState(0);
+  const [originLat, setStartLat] = useState(0);
+  const [destinationLng, setEndLng] = useState(0);
+  const [destinationLat, setEndLat] = useState(0);
   const [startLocation, setStart] = useState("");
   const [endLocation, setEnd] = useState("");
   const [description, setDesc] = useState("");
-  const [priceError, setPriceError] = useState("");
-  const [seatError, setSeatError] = useState("");
   const [postError, setPostError] = useState("");
   const [mapSelection, setMapSelection] = useState("");
   const [price, setPrice] = useState(0);
@@ -46,11 +46,14 @@ const Post = () => {
   const handleStartChange = (e) => setStart(e.target.value);
   const handleEndChange = (e) => setEnd(e.target.value);
   const handleDescChange = (e) => setDesc(e.target.value);
-  const handleDepartureChange = (e) => setDate(e.target.value);
+
+  const handleDepartureChange = (e) => setDate(
+    e.target.value
+  );
   
   let formattedDate = "Select a date"
   if (departureDate) {
-    formattedDate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(departureDate);
+    formattedDate = departureDate;
   }
 
   const mapUses = {
@@ -94,41 +97,32 @@ const Post = () => {
 
   const handlePriceChange = (e) => {
     setPrice(e.target.value);
-    const priceRegex = /^[€£$]?\d{1,9}(,\d{3})*(\.\d{1,2})?$/;
-    if (!priceRegex.test(e.target.value)) {
-      setPriceError("Price is invalid");
-    } else {
-      setPriceError("");
-    }
   };
 
   const handleSeatsChange = (e) => {
     setSeats(e.target.value);
-    const priceRegex = /^\d*$/;
-    if (!priceRegex.test(e.target.value)) {
-      setSeatError("Seats are invalid");
-    } else {
-      setSeatError("");
-    }
   };
 
   const handlePost = async () => {
 
     const userRequest = {
-      postName,
-      originLng,
-      originLat,
-      destinationLng,
-      destinationLat,
-      description,
-      departureDate,
-      price,
-      seatsAvailable,
+      name: String(postName),
+      originLng: Number(originLng),
+      originLat: Number(originLat),
+      destinationLng: Number(destinationLng),
+      destinationLat: Number(destinationLat),
+      description: String(description),
+      departureDate: String(departureDate),
+      price:  Number(price),
+      seatsAvailable:  Number(seatsAvailable),
     };
 
     const result = await savePost(userRequest);
     if (result.error) {
       setPostError(result.error);
+    } else {
+      setPostError('');
+			navigate('/');
     }
   };
 
@@ -257,12 +251,12 @@ const Post = () => {
                 <Input
                   onChange={handleSeatsChange}
                   placeholder="4"
+                  type="number"
                   width="55%"
                   bg={theme.colors.background}
                   _placeholder={{ color: theme.colors.textLight }}
                 />
               </Flex>
-              {seatError && <Text color="red.500">{seatError}</Text>}
 
             <Textarea
               placeholder="Descripton"
@@ -289,7 +283,6 @@ const Post = () => {
                   _placeholder={{ color: theme.colors.textLight }}
                 />
               </Flex>
-              {priceError && <Text color="red.500">{priceError}</Text>}
 
               <CustomButton
                 size="md"
