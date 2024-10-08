@@ -1,3 +1,4 @@
+const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 async function handleResponse(response) {
@@ -9,7 +10,7 @@ async function handleResponse(response) {
 }
 
 export async function createUser(createUserRequest) {
-	const response = await fetch(`${API_BASE_URL}/CreateUser`, {
+	const response = await fetch(`${API_AUTH_URL}/CreateUser`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -24,7 +25,7 @@ export async function createUser(createUserRequest) {
 }
 
 export async function login(loginRequest) {
-	const response = await fetch(`${API_BASE_URL}/VerifyLoginCredentials`, {
+	const response = await fetch(`${API_AUTH_URL}/VerifyLoginCredentials`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -36,6 +37,38 @@ export async function login(loginRequest) {
 		return { error: result.error };
 	}
 	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id, photo: result.photo };
+}
+
+export async function getUser() {
+	try {
+		const result = await makeAuthenticatedRequest('/GetUser', {
+			method: 'GET',
+		});
+		if (result.error) {
+			return { error: result.error };
+		}
+		return {result};
+	} catch (error) {
+		return { error: 'Failed to fetch user data' };
+	}
+}
+
+export async function editUser(editUserRequest) {
+	try {
+		const result = await makeAuthenticatedRequest('/EditUser', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(editUserRequest),
+		});
+		if (result.error) {
+			return { error: result.error };
+		}
+		return result;
+	} catch (error) {
+		return { error: 'Failed to update user data' };
+	}
 }
 
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
