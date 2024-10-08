@@ -50,7 +50,11 @@ const Nav = () => {
 		return () => {
 			window.removeEventListener('storage', updatePhoto);
 		};
-	}, []); 
+	}, []);
+
+	const handleEditAccount = () => {
+		navigate('/user');
+	};
 
 	return (
 		<Flex
@@ -135,6 +139,7 @@ const Nav = () => {
 									}}
 									boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
 									icon={<EditIcon />}
+									onClick={handleEditAccount}
 								>
 									Edit Account
 								</MenuItem>
