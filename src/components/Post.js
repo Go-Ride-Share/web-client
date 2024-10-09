@@ -122,7 +122,7 @@ const Post = () => {
       setPostError(result.error);
     } else {
       setPostError('');
-			navigate('/');
+			navigate('/posts');
     }
   };
 
