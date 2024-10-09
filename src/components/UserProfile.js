@@ -16,6 +16,7 @@ import {
 	Box,
 	Flex,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import { FiEdit, FiUpload } from 'react-icons/fi';
 import CustomButton from './Button';
 import { getUser, editUser } from '../api-client/ApiClient';
@@ -42,6 +43,14 @@ const UserProfile = () => {
 	});
 	const [phoneError, setPhoneError] = useState('');
 	const [isChanged, setIsChanged] = useState(false);
+
+	const isLoggedIn = () => {
+		return (
+			localStorage.getItem('logic_token') &&
+			localStorage.getItem('db_token') &&
+			localStorage.getItem('user_id')
+		);
+	};
 
 	const fetchUserData = async () => {
 		setLoading(true);
@@ -139,147 +148,165 @@ const UserProfile = () => {
 				bg={theme.colors.accent}
 				color={theme.colors.text}
 			>
-				{loading && <Spinner size="xl" color={theme.colors.secondary} />}
-				<Stack spacing={4}>
-					{error && (
-						<Text color="red.500" align={'center'}>
-							{error}
+				{!isLoggedIn() ? (
+					<Box textAlign="center" mt="8">
+						<Text fontSize="xl" color={theme.colors.text}>
+							Please Log In first to view the user profile.{' '}
+							<Link to="/login" style={{ color: theme.colors.secondary }}>
+								Log In
+							</Link>
 						</Text>
-					)}
-					{successMessage && <Text color="green.500">{successMessage}</Text>}
+					</Box>
+				) : loading ? (
+					<Box textAlign="center" mt="8">
+						<Spinner size="xl" color={theme.colors.secondary} />
+					</Box>
+				) : error ? (
+					<Text color="red.500" align="center">
+						{error}
+					</Text>
+				) : (
+					<Stack spacing={4}>
+						{error && (
+							<Text color="red.500" align={'center'}>
+								{error}
+							</Text>
+						)}
+						{successMessage && <Text color="green.500">{successMessage}</Text>}
 
-					<Flex alignItems="center" mb={4}>
-						<InputGroup>
-							<Input
-								placeholder="Name"
-								type="text"
-								name="name"
-								value={userData.name}
-								onChange={handleInputChange}
-								isReadOnly={!editableFields.name}
-								bg={theme.colors.background}
-								_placeholder={{ color: theme.colors.textLight }}
+						<Flex alignItems="center" mb={4}>
+							<InputGroup>
+								<Input
+									placeholder="Name"
+									type="text"
+									name="name"
+									value={userData.name}
+									onChange={handleInputChange}
+									isReadOnly={!editableFields.name}
+									bg={theme.colors.background}
+									_placeholder={{ color: theme.colors.textLight }}
+								/>
+							</InputGroup>
+							<IconButton
+								aria-label="Edit Name"
+								icon={<FiEdit color={theme.colors.text}/>}
+								onClick={() => toggleEditableField('name')}
+								variant="ghost"
+								ml={2}
 							/>
-						</InputGroup>
-						<IconButton
-							aria-label="Edit Name"
-							icon={<FiEdit />}
-							onClick={() => toggleEditableField('name')}
-							variant="ghost"
-							ml={2}
-						/>
-					</Flex>
+						</Flex>
 
-					<Flex alignItems="center" mb={4}>
-						<InputGroup>
-							<Input
-								placeholder="Email Address"
-								type="email"
-								name="email"
-								value={userData.email}
-								isReadOnly
-								bg={theme.colors.background}
-								_placeholder={{ color: theme.colors.textLight }}
+						<Flex alignItems="center" mb={4}>
+							<InputGroup>
+								<Input
+									placeholder="Email Address"
+									type="email"
+									name="email"
+									value={userData.email}
+									isReadOnly
+									bg={theme.colors.background}
+									_placeholder={{ color: theme.colors.textLight }}
+								/>
+							</InputGroup>
+						</Flex>
+
+						<Flex alignItems="center" mb={4}>
+							<InputGroup>
+								<Textarea
+									placeholder="Bio"
+									name="bio"
+									value={userData.bio}
+									onChange={handleInputChange}
+									isReadOnly={!editableFields.bio}
+									bg={theme.colors.background}
+									_placeholder={{ color: theme.colors.textLight }}
+								/>
+							</InputGroup>
+							<IconButton
+								aria-label="Edit Bio"
+								icon={<FiEdit color={theme.colors.text}/>}
+								onClick={() => toggleEditableField('bio')}
+								variant="ghost"
+								ml={2}
 							/>
-						</InputGroup>
-					</Flex>
+						</Flex>
 
-					<Flex alignItems="center" mb={4}>
-						<InputGroup>
-							<Textarea
-								placeholder="Bio"
-								name="bio"
-								value={userData.bio}
-								onChange={handleInputChange}
-								isReadOnly={!editableFields.bio}
-								bg={theme.colors.background}
-								_placeholder={{ color: theme.colors.textLight }}
+						<Flex alignItems="center" mb={4}>
+							<InputGroup>
+								<InputLeftAddon>+1</InputLeftAddon>
+								<Input
+									placeholder="Phone Number"
+									type="tel"
+									name="phone"
+									value={userData.phone}
+									onChange={handleInputChange}
+									isReadOnly={!editableFields.phone}
+									bg={theme.colors.background}
+									_placeholder={{ color: theme.colors.textLight }}
+								/>
+							</InputGroup>
+							<IconButton
+								aria-label="Edit Phone"
+								icon={<FiEdit color={theme.colors.text}/>}
+								onClick={() => toggleEditableField('phone')}
+								variant="ghost"
+								ml={2}
 							/>
-						</InputGroup>
-						<IconButton
-							aria-label="Edit Bio"
-							icon={<FiEdit />}
-							onClick={() => toggleEditableField('bio')}
-							variant="ghost"
-							ml={2}
-						/>
-					</Flex>
+						</Flex>
+						{phoneError && <Text color="red.500">{phoneError}</Text>}
 
-					<Flex alignItems="center" mb={4}>
-						<InputGroup>
-							<InputLeftAddon>+1</InputLeftAddon>
-							<Input
-								placeholder="Phone Number"
-								type="tel"
-								name="phone"
-								value={userData.phone}
-								onChange={handleInputChange}
-								isReadOnly={!editableFields.phone}
-								bg={theme.colors.background}
-								_placeholder={{ color: theme.colors.textLight }}
-							/>
-						</InputGroup>
-						<IconButton
-							aria-label="Edit Phone"
-							icon={<FiEdit />}
-							onClick={() => toggleEditableField('phone')}
-							variant="ghost"
-							ml={2}
-						/>
-					</Flex>
-					{phoneError && <Text color="red.500">{phoneError}</Text>}
-
-					<Flex alignItems="center" mb={4}>
-						<Box>
-							<Image
-								src={photoPreview || DefaultPhoto}
-								alt="Uploaded Preview"
-								boxSize="100px"
-								objectFit="cover"
-								borderRadius="full"
+						<Flex alignItems="center" mb={4}>
+							<Box>
+								<Image
+									src={photoPreview || DefaultPhoto}
+									alt="Uploaded Preview"
+									boxSize="100px"
+									objectFit="cover"
+									borderRadius="full"
+									mt={4}
+								/>
+							</Box>
+							<IconButton
+								aria-label="Edit Photo"
+								icon={<FiEdit color={theme.colors.text}/>}
+								onClick={() => toggleEditableField('photo')}
+								variant="ghost"
+								ml={4}
 								mt={4}
 							/>
-						</Box>
-						<IconButton
-							aria-label="Edit Photo"
-							icon={<FiEdit />}
-							onClick={() => toggleEditableField('photo')}
-							variant="ghost"
-							ml={4}
-							mt={4}
-						/>
-					</Flex>
+						</Flex>
 
-					{editableFields.photo && (
-						<InputGroup mb={4}>
-							<InputLeftElement pointerEvents="none">
-								<IconButton
-									aria-label="Upload Picture"
-									icon={<FiUpload />}
-									bg="transparent"
-									color="gray.500"
-									_hover={{ color: theme.colors.secondary }}
+						{editableFields.photo && (
+							<InputGroup mb={4}>
+								<InputLeftElement pointerEvents="none">
+									<IconButton
+										aria-label="Upload Picture"
+										icon={<FiUpload />}
+										bg="transparent"
+										color="gray.500"
+										_hover={{ color: theme.colors.secondary }}
+									/>
+								</InputLeftElement>
+								<Input
+									type="file"
+									accept="image/*"
+									onChange={handlePhotoChange}
+									bg={theme.colors.background}
+									pl="12"
+									_placeholder={{ color: theme.colors.textLight }}
 								/>
-							</InputLeftElement>
-							<Input
-								type="file"
-								accept="image/*"
-								onChange={handlePhotoChange}
-								bg={theme.colors.background}
-								pl="12"
-								_placeholder={{ color: theme.colors.textLight }}
-							/>
-						</InputGroup>
-					)}
+							</InputGroup>
+						)}
 
-					<CustomButton
-						size="md"
-						isDisabled={!isChanged || phoneError}
-						onClick={handleSubmit}
-					>
-						Update Information
-					</CustomButton>
-				</Stack>
+						<CustomButton
+							size="md"
+							isDisabled={!isChanged || phoneError}
+							onClick={handleSubmit}
+						>
+							Update Information
+						</CustomButton>
+					</Stack>
+				)}
 			</Card>
 		</Stack>
 	);
