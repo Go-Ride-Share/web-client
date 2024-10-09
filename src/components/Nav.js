@@ -78,16 +78,18 @@ const Nav = () => {
 			</Link>
 
 			<Box>
-				<Link
-					as={RouterLink}
-					to="/post"
-					fontSize="lg"
-					fontWeight="bold"
-					color={theme.colors.text}
-					mr="4"
-				>
-					Post a Ride
-				</Link>
+				{isLoggedIn() && (
+					<Link
+						as={RouterLink}
+						to="/post"
+						fontSize="lg"
+						fontWeight="bold"
+						color={theme.colors.text}
+						mr="4"
+					>
+						Post a Ride
+					</Link>
+				)}
 				{isLoggedIn() ? (
 					<>
 						<Button
