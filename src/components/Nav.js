@@ -14,6 +14,7 @@ import {
 	MenuItem,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
+import { FiEye } from 'react-icons/fi';
 import logo from '../assets/images/LogoNotBlack.png';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
@@ -54,6 +55,10 @@ const Nav = () => {
 
 	const handleEditAccount = () => {
 		navigate('/user');
+	};
+
+	const handleViewPosts = () => {
+		navigate('/posts');
 	};
 
 	return (
@@ -142,6 +147,19 @@ const Nav = () => {
 									onClick={handleEditAccount}
 								>
 									Edit Account
+								</MenuItem>
+								<MenuItem
+									bg={theme.colors.secondary}
+									color={theme.colors.text}
+									_hover={{
+										bg: theme.colors.tertiary,
+										boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+									}}
+									boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+									icon={<FiEye />}
+									onClick={handleViewPosts}
+								>
+									View Posts
 								</MenuItem>
 							</MenuList>
 						</Menu>

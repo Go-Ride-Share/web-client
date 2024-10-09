@@ -114,3 +114,23 @@ export async function savePost(savePostRequest) {
 	}
 	return { token: response.token };
 }
+
+export async function getPosts(userId) {
+	try {
+		if (!userId) {
+			return { error: 'User ID is required' };
+		}
+
+		const result = await makeAuthenticatedRequest(`/getPosts?userId=${userId}`, {
+			method: 'GET',
+		});
+
+		if (result.error) {
+			return { error: result.error };
+		}
+
+		return result;
+	} catch (error) {
+		return { error: 'Failed to fetch posts' };
+	}
+}
