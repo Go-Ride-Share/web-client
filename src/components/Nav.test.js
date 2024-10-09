@@ -63,8 +63,31 @@ describe('Nav component', () => {
 			</Router>
 		);
 
-		expect(screen.getByRole('button', { name: /Sign Out/i })).toBeInTheDocument();
-		expect(screen.queryByRole('button', { name: /Sign In/i })).not.toBeInTheDocument();
+		expect(
+			screen.getByRole('button', { name: /Sign Out/i })
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole('button', { name: /Sign In/i })
+		).not.toBeInTheDocument();
+	});
+
+	test('renders Post a Ride link when user is logged in', () => {
+		window.localStorage.getItem.mockImplementation((key) => {
+			if (key === 'logic_token') return 'some_logic_token';
+			if (key === 'db_token') return 'some_db_token';
+			if (key === 'user_id') return 'some_user_id';
+			return null;
+		});
+
+		render(
+			<Router>
+				<ChakraProvider>
+					<Nav />
+				</ChakraProvider>
+			</Router>
+		);
+
+		expect(screen.getByText(/Post a Ride/i)).toBeInTheDocument();
 	});
 
 	test('handles sign out', () => {
