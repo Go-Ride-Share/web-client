@@ -1,9 +1,9 @@
 # Go-Ride-Share/Web-Client
 
 ## Local Setup
-1. Have teh API and DB working locally.
+1. Have the API and DB working locally.
 1. Copy the env file: `cp .env.example .env` and add env variables.
-1. Install dependencies with `npm install`. This may require logging into the npm registry. See [here](https://priceline.atlassian.net/wiki/spaces/PIPE/pages/7900594947/Artifact+Registry+Setup+-+NPM).
+1. Install dependencies with `npm install`.
 1. Run the application `npm start`.
 
 ## Deploy
