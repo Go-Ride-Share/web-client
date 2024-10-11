@@ -208,7 +208,7 @@ const Signup = () => {
 								onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 								icon={showConfirmPassword ? <FiEyeOff /> : <FiEye />}
 								aria-label={
-									showConfirmPassword ? 'Hide password' : 'Show password'
+									showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
 								}
 								variant="link"
 							/>

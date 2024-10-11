@@ -1,4 +1,13 @@
-import { createUser, login, makeAuthenticatedRequest } from './ApiClient';
+import {
+	createUser,
+	login,
+	makeAuthenticatedRequest,
+	editUser,
+	getUser,
+	savePost,
+	getPosts,
+} from './ApiClient';
+import '@testing-library/jest-dom';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
@@ -197,6 +206,273 @@ describe('ApiClient', () => {
 			});
 
 			expect(result).toEqual({ error: mockErrorResponse });
+		});
+	});
+
+	describe('editUser', () => {
+		test('should successfully edit user', async () => {
+			const editUserRequest = {
+				name: 'New Name',
+				email: 'new@example.com',
+				phone: '9876543210',
+			};
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			const mockResponse = { success: true };
+
+			// Mocking the fetch API response
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await editUser(editUserRequest);
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when edit user fails', async () => {
+			const editUserRequest = {
+				name: 'New Name',
+				email: 'new@example.com',
+				phone: '9876543210',
+			};
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve('Failed to update user data'),
+				})
+			);
+
+			const result = await editUser(editUserRequest);
+
+			expect(result).toEqual({ error: 'Failed to update user data' });
+		});
+	});
+
+	describe('getUser', () => {
+		test('should successfully fetch user data', async () => {
+			const mockResponse = {
+				name: 'Test User',
+				email: 'test@example.com',
+				bio: 'Test bio',
+				phone: '1234567890',
+				photo: 'url/to/photo.jpg',
+			};
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await getUser();
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when fetch user fails', async () => {
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve('Failed to fetch user data'),
+				})
+			);
+
+			const result = await getUser();
+
+			expect(result).toEqual({ error: 'Failed to fetch user data' });
+		});
+	});
+
+	describe('savePost', () => {
+		test('should successfully save post', async () => {
+			const savePostRequest = {
+				title: 'Test Post',
+				content: 'This is a test post.',
+			};
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			const mockResponse = { token: 'postToken123' };
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await savePost(savePostRequest);
+
+			expect(result).toEqual({ token: 'postToken123' });
+		});
+
+		test('should return error when save post fails', async () => {
+			const savePostRequest = {
+				title: 'Test Post',
+				content: 'This is a test post.',
+			};
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve('Failed to save post'),
+				})
+			);
+
+			const result = await savePost(savePostRequest);
+
+			expect(result).toEqual({ error: 'Failed to save post' });
+		});
+	});
+
+	describe('getPosts', () => {
+		test('should successfully fetch posts', async () => {
+			const mockResponse = [
+				{ id: 1, title: 'Post 1', content: 'Content of post 1' },
+				{ id: 2, title: 'Post 2', content: 'Content of post 2' },
+			];
+
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await getPosts('user1');
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when fetching posts fails', async () => {
+			// Mocking localStorage
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+			
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve('Failed to fetch posts'),
+				})
+			);
+
+			const result = await getPosts('user1');
+
+			expect(result).toEqual({ error: 'Failed to fetch posts' });
+		});
+
+		test('should return error when userId is missing', async () => {
+			const result = await getPosts();
+
+			expect(result).toEqual({ error: 'User ID is required' });
 		});
 	});
 });

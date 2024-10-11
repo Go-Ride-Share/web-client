@@ -36,7 +36,6 @@ describe('Signup Component', () => {
 			</Router>
 		);
 
-		// Check if the input fields and button are rendered
 		expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
 		expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
 		expect(screen.getByTestId('password-input')).toBeInTheDocument();
@@ -46,6 +45,105 @@ describe('Signup Component', () => {
 		expect(
 			screen.getByRole('button', { name: /sign up/i })
 		).toBeInTheDocument();
+	});
+
+	test('shows error for invalid email format', () => {
+		render(
+			<Router>
+				<ChakraProvider>
+					<Signup />
+				</ChakraProvider>
+			</Router>
+		);
+
+		fireEvent.change(screen.getByPlaceholderText(/email address/i), {
+			target: { value: 'invalid-email' },
+		});
+
+		expect(screen.getByText(/invalid email format/i)).toBeInTheDocument();
+	});
+
+	test('shows error when passwords do not match', () => {
+		render(
+			<Router>
+				<ChakraProvider>
+					<Signup />
+				</ChakraProvider>
+			</Router>
+		);
+
+		fireEvent.change(screen.getByTestId('password-input'), {
+			target: { value: 'password123' },
+		});
+		fireEvent.change(screen.getByTestId('confirm-password-input'), {
+			target: { value: 'differentPassword' },
+		});
+
+		expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
+	});
+
+	test('shows error for invalid phone number', () => {
+		render(
+			<Router>
+				<ChakraProvider>
+					<Signup />
+				</ChakraProvider>
+			</Router>
+		);
+
+		fireEvent.change(screen.getByPlaceholderText(/phone number/i), {
+			target: { value: '123' },
+		});
+
+		expect(
+			screen.getByText(/phone number must be 10 digits/i)
+		).toBeInTheDocument();
+	});
+
+	test('toggles password visibility', () => {
+		render(
+			<Router>
+				<ChakraProvider>
+					<Signup />
+				</ChakraProvider>
+			</Router>
+		);
+
+		const passwordInput = screen.getByTestId('password-input');
+		expect(passwordInput).toHaveAttribute('type', 'password');
+
+		const toggleButton = screen.getByLabelText(/show password/i);
+		fireEvent.click(toggleButton);
+
+		expect(passwordInput).toHaveAttribute('type', 'text');
+
+		fireEvent.click(toggleButton);
+		expect(passwordInput).toHaveAttribute('type', 'password');
+	});
+
+	test('displays uploaded photo preview', async () => {
+		render(
+			<Router>
+				<ChakraProvider>
+					<Signup />
+				</ChakraProvider>
+			</Router>
+		);
+
+		const file = new File(['(⌐□_□)'], 'test-image.png', { type: 'image/png' });
+
+		fireEvent.change(screen.getByPlaceholderText(/upload picture/i), {
+			target: { files: [file] },
+		});
+
+		await waitFor(() => {
+			const img = screen.getByAltText('Uploaded Preview');
+			expect(img).toBeInTheDocument();
+			expect(img).toHaveAttribute(
+				'src',
+				expect.stringContaining('data:image/png')
+			);
+		});
 	});
 
 	test('displays an error message on failed signup', async () => {
@@ -93,7 +191,7 @@ describe('Signup Component', () => {
 		ApiClient.createUser.mockResolvedValueOnce({
 			logic_token: 'logicToken123',
 			db_token: 'dbToken456',
-			user_id: 'user1'
+			user_id: 'user1',
 		});
 
 		render(
@@ -134,10 +232,7 @@ describe('Signup Component', () => {
 				'db_token',
 				'dbToken456'
 			);
-			expect(localStorage.setItem).toHaveBeenCalledWith(
-				'user_id',
-				'user1'
-			);
+			expect(localStorage.setItem).toHaveBeenCalledWith('user_id', 'user1');
 			expect(mockNavigate).toHaveBeenCalledWith('/');
 		});
 	});
