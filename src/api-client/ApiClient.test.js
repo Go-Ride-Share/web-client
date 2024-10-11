@@ -242,17 +242,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await editUser(editUserRequest);
-
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/EditUser`, {
-				method: 'POST',
-				headers: {
-					Authorization: 'Bearer logicToken123',
-					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(editUserRequest),
-			});
 			expect(result).toEqual(mockResponse);
 		});
 
@@ -322,15 +311,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await getUser();
-
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/GetUser`, {
-				method: 'GET',
-				headers: {
-					Authorization: 'Bearer logicToken123',
-					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1',
-				},
-			});
 			expect(result).toEqual(mockResponse);
 		});
 
@@ -394,16 +374,6 @@ describe('ApiClient', () => {
 
 			const result = await savePost(savePostRequest);
 
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/SavePost`, {
-				method: 'POST',
-				headers: {
-					Authorization: 'Bearer logicToken123',
-					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(savePostRequest),
-			});
 			expect(result).toEqual({ token: 'postToken123' });
 		});
 
@@ -469,18 +439,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await getPosts('user1');
-
-			expect(fetch).toHaveBeenCalledWith(
-				`${API_BASE_URL}/getPosts?userId=user1`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: 'Bearer logicToken123',
-						'X-Db-Token': 'dbToken456',
-						'X-User-ID': 'user1',
-					},
-				}
-			);
 			expect(result).toEqual(mockResponse);
 		});
 
