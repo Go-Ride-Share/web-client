@@ -21,7 +21,12 @@ export async function createUser(createUserRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id, photo: result.photo };
+	return {
+		logic_token: result.logic_token,
+		db_token: result.db_token,
+		user_id: result.user_id,
+		photo: result.photo,
+	};
 }
 
 export async function login(loginRequest) {
@@ -36,7 +41,12 @@ export async function login(loginRequest) {
 	if (result.error) {
 		return { error: result.error };
 	}
-	return { logic_token: result.logic_token, db_token: result.db_token, user_id: result.user_id, photo: result.photo };
+	return {
+		logic_token: result.logic_token,
+		db_token: result.db_token,
+		user_id: result.user_id,
+		photo: result.photo,
+	};
 }
 
 export async function getUser() {
@@ -53,7 +63,7 @@ export async function getUser() {
 			bio: result.bio,
 			phone: result.phone,
 			photo: result.photo,
-	};
+		};
 	} catch (error) {
 		return { error: 'Failed to fetch user data' };
 	}
@@ -98,17 +108,14 @@ export async function makeAuthenticatedRequest(endpoint, options = {}) {
 }
 
 export async function savePost(savePostRequest) {
+	const response = await makeAuthenticatedRequest(`/SavePost`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(savePostRequest),
+	});
 
-	const response = makeAuthenticatedRequest(
-		`/SavePost`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(savePostRequest),
-		}
-	);
 	if (response.error) {
 		return { error: response.error };
 	}
@@ -121,9 +128,12 @@ export async function getPosts(userId) {
 			return { error: 'User ID is required' };
 		}
 
-		const result = await makeAuthenticatedRequest(`/getPosts?userId=${userId}`, {
-			method: 'GET',
-		});
+		const result = await makeAuthenticatedRequest(
+			`/getPosts?userId=${userId}`,
+			{
+				method: 'GET',
+			}
+		);
 
 		if (result.error) {
 			return { error: result.error };
