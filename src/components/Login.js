@@ -31,12 +31,18 @@ const Login = () => {
 		if (result.error) {
 			setError(result.error);
 		} else {
-			localStorage.setItem('logic_token', result.logic_token);
-			localStorage.setItem('db_token', result.db_token);
-			localStorage.setItem('user_id', result.user_id);
-			localStorage.setItem('user_photo', result.photo);
-			setError('');
-			navigate('/');
+			const { logic_token, db_token, user_id } = result;
+
+			if (logic_token && db_token && user_id) {
+				localStorage.setItem('logic_token', logic_token);
+				localStorage.setItem('db_token', db_token);
+				localStorage.setItem('user_id', user_id);
+				localStorage.setItem('user_photo', result.photo);
+
+				navigate('/');
+			} else {
+				setError('Signup failed: Missing required token data.');
+			}
 		}
 	};
 

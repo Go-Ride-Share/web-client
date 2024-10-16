@@ -8,8 +8,9 @@ import Signup from './Signup';
 import UserProfile from './UserProfile';
 import Post from './Post';
 import PostList from './PostList';
+import HomePage from './HomePage';
 
-const PageWithNav = ({ login, signup, user, post, posts }) => {
+const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
 	return (
 		<Box>
 			<Nav />
@@ -23,7 +24,9 @@ const PageWithNav = ({ login, signup, user, post, posts }) => {
 				) : post ? (
 					<Post />
 				) : posts ? (
-					<PostList />
+					<PostList usersRides />
+				) : homePage ? (
+					<HomePage />
 				) : (
 					<Outlet />
 				)}
@@ -38,6 +41,7 @@ PageWithNav.propTypes = {
 	user: PropTypes.bool,
 	post: PropTypes.bool,
 	posts: PropTypes.bool,
+	homePage: PropTypes.bool,
 };
 
 export default PageWithNav;
