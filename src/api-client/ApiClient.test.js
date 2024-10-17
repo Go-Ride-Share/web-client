@@ -6,6 +6,10 @@ import {
 	getUser,
 	savePost,
 	getPosts,
+	createConversation,
+	postMessage,
+	getAllConversations,
+	pollConversation,
 } from './ApiClient';
 import '@testing-library/jest-dom';
 
@@ -15,10 +19,22 @@ const API_AUTH_URL = process.env.REACT_APP_API_AUTH_URL;
 describe('ApiClient', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		const mockLocalStorage = {
+			getItem: jest.fn((key) => {
+				if (key === 'logic_token') return 'logicToken123';
+				if (key === 'db_token') return 'dbToken456';
+				if (key === 'user_id') return 'user1';
+				return null;
+			}),
+		};
+		Object.defineProperty(window, 'localStorage', {
+			value: mockLocalStorage,
+		});
 	});
 
 	describe('createUser', () => {
 		test('should return tokens on successful user creation', async () => {
+			jest.clearAllMocks();
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
@@ -58,6 +74,7 @@ describe('ApiClient', () => {
 		});
 
 		test('should return error when user creation fails', async () => {
+			jest.clearAllMocks();
 			// Mocking the fetch API response for failure
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
@@ -80,6 +97,7 @@ describe('ApiClient', () => {
 
 	describe('login', () => {
 		test('should return tokens on successful login', async () => {
+			jest.clearAllMocks();
 			const mockResponse = {
 				logic_token: 'logicToken123',
 				db_token: 'dbToken456',
@@ -118,6 +136,7 @@ describe('ApiClient', () => {
 		});
 
 		test('should return error on failed login', async () => {
+			jest.clearAllMocks();
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: false,
@@ -139,20 +158,6 @@ describe('ApiClient', () => {
 	describe('makeAuthenticatedRequest', () => {
 		test('should make authenticated request successfully', async () => {
 			const mockResponse = { data: 'Some data' };
-
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
 
 			// Mocking the fetch API response
 			global.fetch = jest.fn(() =>
@@ -180,19 +185,6 @@ describe('ApiClient', () => {
 		test('should return error on failed authenticated request', async () => {
 			const mockErrorResponse = 'Authentication failed';
 
-			// Mocking the localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			// Mocking the fetch API response
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
@@ -217,20 +209,6 @@ describe('ApiClient', () => {
 				phone: '9876543210',
 			};
 
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			const mockResponse = { success: true };
 
 			// Mocking the fetch API response
@@ -251,20 +229,6 @@ describe('ApiClient', () => {
 				email: 'new@example.com',
 				phone: '9876543210',
 			};
-
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
 
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
@@ -289,20 +253,6 @@ describe('ApiClient', () => {
 				photo: 'url/to/photo.jpg',
 			};
 
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: true,
@@ -315,20 +265,6 @@ describe('ApiClient', () => {
 		});
 
 		test('should return error when fetch user fails', async () => {
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: false,
@@ -348,20 +284,6 @@ describe('ApiClient', () => {
 				title: 'Test Post',
 				content: 'This is a test post.',
 			};
-
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
 
 			const mockResponse = { token: 'postToken123' };
 
@@ -383,20 +305,6 @@ describe('ApiClient', () => {
 				content: 'This is a test post.',
 			};
 
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: false,
@@ -417,20 +325,6 @@ describe('ApiClient', () => {
 				{ id: 2, title: 'Post 2', content: 'Content of post 2' },
 			];
 
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: true,
@@ -443,20 +337,6 @@ describe('ApiClient', () => {
 		});
 
 		test('should return error when fetching posts fails', async () => {
-			// Mocking localStorage
-			const mockLocalStorage = {
-				getItem: jest.fn((key) => {
-					if (key === 'logic_token') return 'logicToken123';
-					if (key === 'db_token') return 'dbToken456';
-					if (key === 'user_id') return 'user1';
-					return null;
-				}),
-			};
-
-			Object.defineProperty(window, 'localStorage', {
-				value: mockLocalStorage,
-			});
-			
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
 					ok: false,
@@ -473,6 +353,224 @@ describe('ApiClient', () => {
 			const result = await getPosts();
 
 			expect(result).toEqual({ error: 'User ID is required' });
+		});
+	});
+
+	describe('createConversation', () => {
+		test('should successfully create a conversation', async () => {
+			const mockResponse = { conversationId: 'ccccc-cccccccccc-ccccc' };
+
+			const createConversationRequest = {
+				userId: 'user1',
+				contents: 'Hello, how are you?',
+			};
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await createConversation(createConversationRequest);
+
+			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/CreateConversation`, {
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer logicToken123',
+					'X-Db-Token': 'dbToken456',
+					'X-User-ID': 'user1',
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(createConversationRequest),
+			});
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when creating conversation fails', async () => {
+			const mockErrorResponse = 'Failed to create conversation';
+
+			const createConversationRequest = {
+				userId: 'user1',
+				contents: 'Hello, how are you?',
+			};
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve(mockErrorResponse),
+				})
+			);
+
+			const result = await createConversation(createConversationRequest);
+
+			expect(result).toEqual({ error: mockErrorResponse });
+		});
+	});
+
+	describe('postMessage', () => {
+		test('should successfully post a message', async () => {
+			const mockResponse = { conversationId: 'ccccc-cccccccccc-ccccc' };
+			const postMessageRequest = {
+				conversationId: 'ccccc-cccccccccc-ccccc',
+				contents: 'This is a message.',
+			};
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await postMessage(postMessageRequest);
+
+			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/PostMessage`, {
+				method: 'POST',
+				headers: {
+					Authorization: 'Bearer logicToken123',
+					'X-Db-Token': 'dbToken456',
+					'X-User-ID': 'user1',
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(postMessageRequest),
+			});
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when posting message fails', async () => {
+			const mockErrorResponse = 'Failed to post message';
+
+			const postMessageRequest = {
+				conversationId: 'ccccc-cccccccccc-ccccc',
+				contents: 'This is a message.',
+			};
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve(mockErrorResponse),
+				})
+			);
+
+			const result = await postMessage(postMessageRequest);
+
+			expect(result).toEqual({ error: mockErrorResponse });
+		});
+	});
+
+	describe('getAllConversations', () => {
+		test('should successfully fetch all conversations', async () => {
+			const mockResponse = [
+				{
+					conversationId: 'ccccc-cccccccccc-ccccc',
+					user: { userId: 'user1', name: 'Bob', profile: 'url/to/profile' },
+					messages: [
+						{
+							timeStamp: '2023-09-20T15:00:00Z',
+							senderId: 'user1',
+							contents: 'Hello!',
+						},
+					],
+					postId: 'aaaaa-aaaaaaaaaa-aaaaa',
+				},
+			];
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await getAllConversations();
+
+			expect(fetch).toHaveBeenCalledWith(
+				`${API_BASE_URL}/GetAllConversations`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: 'Bearer logicToken123',
+						'X-Db-Token': 'dbToken456',
+						'X-User-ID': 'user1',
+					},
+				}
+			);
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when fetching conversations fails', async () => {
+			const mockErrorResponse = 'Failed to fetch conversations';
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve(mockErrorResponse),
+				})
+			);
+
+			const result = await getAllConversations();
+
+			expect(result).toEqual({ error: mockErrorResponse });
+		});
+	});
+
+	describe('pollConversation', () => {
+		test('should successfully poll conversation', async () => {
+			const mockResponse = {
+				conversationId: 'ccccc-cccccccccc-ccccc',
+				user: { userId: 'user1', name: 'Bob', profile: 'url/to/profile' },
+				messages: [
+					{
+						timeStamp: '2023-09-20T15:00:00Z',
+						senderId: 'user1',
+						contents: 'Hello!',
+					},
+				],
+				postId: 'aaaaa-aaaaaaaaaa-aaaaa',
+			};
+
+			const conversationId = 'ccccc-cccccccccc-ccccc';
+			const timeStamp = '2023-09-20T14:59:00Z';
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve(mockResponse),
+				})
+			);
+
+			const result = await pollConversation(conversationId, timeStamp);
+
+			expect(fetch).toHaveBeenCalledWith(
+				`${API_BASE_URL}/PollConversation/conversationId=${conversationId}&timeStamp=${timeStamp}`,
+				{
+					method: 'GET',
+					headers: {
+						Authorization: 'Bearer logicToken123',
+						'X-Db-Token': 'dbToken456',
+						'X-User-ID': 'user1',
+					},
+				}
+			);
+			expect(result).toEqual(mockResponse);
+		});
+
+		test('should return error when polling conversation fails', async () => {
+			const mockErrorResponse = 'Failed to poll conversation';
+			const conversationId = 'ccccc-cccccccccc-ccccc';
+			const timeStamp = '2023-09-20T14:59:00Z';
+
+			global.fetch = jest.fn(() =>
+				Promise.resolve({
+					ok: false,
+					text: () => Promise.resolve(mockErrorResponse),
+				})
+			);
+
+			const result = await pollConversation(conversationId, timeStamp);
+
+			expect(result).toEqual({ error: mockErrorResponse });
 		});
 	});
 });

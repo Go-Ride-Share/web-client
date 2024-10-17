@@ -101,3 +101,42 @@ export async function getAllPosts() {
 
 	return handleResponse(response);
 }
+
+export async function createConversation(createConversationRequest) {
+	const result = await makeAuthenticatedRequest('/CreateConversation', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(createConversationRequest),
+	});
+	return result;
+}
+
+export async function postMessage(postMessageRequest) {
+	const result = await makeAuthenticatedRequest('/PostMessage', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(postMessageRequest),
+	});
+	return result;
+}
+
+export async function getAllConversations() {
+	const result = await makeAuthenticatedRequest('/GetAllConversations', {
+		method: 'GET',
+	});
+	return result; 
+}
+
+export async function pollConversation(conversationId, timeStamp) {
+	const endpoint = timeStamp
+		? `/PollConversation/conversationId=${conversationId}&timeStamp=${timeStamp}`
+		: `/PollConversation/conversationId=${conversationId}`;
+	const result = await makeAuthenticatedRequest(endpoint, {
+		method: 'GET',
+	});
+	return result;
+}
