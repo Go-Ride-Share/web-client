@@ -11,7 +11,7 @@ import {
 	HStack,
 	useDisclosure,
 	Tooltip,
-	Flex
+	Flex,
 } from '@chakra-ui/react';
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import { getPosts, getAllPosts } from '../api-client/ApiClient';
@@ -40,7 +40,7 @@ const PostList = ({ usersRides }) => {
 
 				try {
 					if (usersRides) {
-					response = await getPosts(userId);
+						response = await getPosts(userId);
 					} else {
 						response = await getAllPosts();
 					}
@@ -183,18 +183,20 @@ const PostList = ({ usersRides }) => {
 												justifyContent="flex-end"
 												height="100%"
 											>
-												<Tooltip
-													label={!loggedIn ? 'Login to contact' : ''}
-													shouldWrapChildren
-													isDisabled={loggedIn}
-												>
-													<CustomButton
-														disabled={!loggedIn}
-														onClick={() => handleContactClick(post)}
+												{!usersRides && (
+													<Tooltip
+														label={!loggedIn ? 'Login to contact' : ''}
+														shouldWrapChildren
+														isDisabled={loggedIn}
 													>
-														Contact
-													</CustomButton>
-												</Tooltip>
+														<CustomButton
+															disabled={!loggedIn}
+															onClick={() => handleContactClick(post)}
+														>
+															Contact
+														</CustomButton>
+													</Tooltip>
+												)}
 											</Box>
 										</HStack>
 									</Card>
