@@ -1,6 +1,11 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+	render,
+	screen,
+	fireEvent,
+	waitFor,
+} from '@testing-library/react';
 import ChatBox from './ChatBox';
 import { pollConversation, postMessage } from '../api-client/ApiClient';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -35,7 +40,6 @@ describe('ChatBox Component', () => {
 			`conversation_${conversationId}`,
 			JSON.stringify(mockMessages)
 		);
-		pollConversation.mockResolvedValue({ messages: [] });
 		postMessage.mockResolvedValue({});
 	});
 
@@ -144,5 +148,74 @@ describe('ChatBox Component', () => {
 				screen.getByText('Failed to fetch conversation messages.')
 			).toBeInTheDocument();
 		});
+	});
+
+	it('disables send button when input is empty', () => {
+		render(
+			<ChakraProvider>
+				<ChatBox
+					conversationId={conversationId}
+					onBack={onBack}
+					userName={userName}
+					userPhoto={userPhoto}
+				/>
+			</ChakraProvider>
+		);
+
+		const sendButton = screen.getByRole('button', { name: /send message/i });
+		expect(sendButton).toBeDisabled();
+	});
+
+	it('shows error message when sending a message fails', async () => {
+		postMessage.mockRejectedValueOnce(new Error('Failed to send'));
+
+		render(
+			<ChakraProvider>
+				<ChatBox
+					conversationId={conversationId}
+					onBack={onBack}
+					userName={userName}
+					userPhoto={userPhoto}
+				/>
+			</ChakraProvider>
+		);
+
+		const input = screen.getByPlaceholderText('Type your message...');
+		fireEvent.change(input, { target: { value: 'Test message' } });
+
+		fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+
+		await waitFor(() => {
+			expect(
+				screen.getByText('Failed to send the message.')
+			).toBeInTheDocument();
+		});
+	});
+
+	it('polls for new messages periodically', async () => {
+		pollConversation.mockResolvedValueOnce({
+			messages: [
+				{
+					contents: 'New incoming message',
+					timeStamp: '2023-10-10T10:02:00Z',
+					senderId: 'user-1',
+				},
+			],
+		});
+
+		render(
+			<ChakraProvider>
+				<ChatBox
+					conversationId={conversationId}
+					onBack={onBack}
+					userName={userName}
+					userPhoto={userPhoto}
+				/>
+			</ChakraProvider>
+		);
+
+		await waitFor(() => {
+			expect(screen.getByText(/new incoming message/i)).toBeInTheDocument();
+	});
 	});
 });

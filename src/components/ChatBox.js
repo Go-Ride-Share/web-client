@@ -37,7 +37,9 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 				if (storedMessages && storedMessages.length > 0) {
 					setMessages(storedMessages);
 					const latestMessage = storedMessages[storedMessages.length - 1];
-					setLatestMessageTimestamp(latestMessage.timeStamp);
+					if (latestMessage?.timeStamp) {
+						setLatestMessageTimestamp(latestMessage.timeStamp);
+					}
 				}
 
 				const conversation = await pollConversation(
@@ -58,11 +60,14 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 					localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
 
 					const latestMessage = updatedMessages[updatedMessages.length - 1];
-					setLatestMessageTimestamp(latestMessage.timeStamp);
+					if (latestMessage?.timeStamp) {
+						setLatestMessageTimestamp(latestMessage.timeStamp);
+					}
 				} else if (!storedMessages) {
 					setErrorMessage('No messages found for this conversation.');
 				}
 			} catch (error) {
+				console.log(error);
 				setErrorMessage('Failed to fetch conversation messages.');
 			} finally {
 				setLoading(false);
@@ -94,7 +99,9 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 
 						const latestMessage =
 							newMessages.messages[newMessages.messages.length - 1];
-						setLatestMessageTimestamp(latestMessage.timeStamp);
+						if (latestMessage?.timeStamp) {
+							setLatestMessageTimestamp(latestMessage.timeStamp);
+						}
 					}
 				}
 			} catch (error) {
