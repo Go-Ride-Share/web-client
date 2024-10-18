@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
 	Drawer,
 	DrawerOverlay,
@@ -30,13 +30,12 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 	const [conversationId, setConversationId] = useState(null);
 	const userId = localStorage.getItem('user_id');
 
-	useEffect(() => {
-		if (isOpen) {
-			fetchConversations();
+	const fetchConversations = useCallback(async () => {
+		if (!post?.posterId) {
+			setErrorMessage('Post data is missing.');
+			return;
 		}
-	}, [isOpen]);
 
-	const fetchConversations = async () => {
 		try {
 			const conversations = await getAllConversations(userId);
 			const existingConversation = conversations.find(
@@ -50,9 +49,20 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 		} catch (error) {
 			setErrorMessage('Failed to fetch conversations.');
 		}
-	};
+	}, [userId, post?.posterId]);
+
+	useEffect(() => {
+		if (isOpen) {
+			fetchConversations();
+		}
+	}, [isOpen, fetchConversations]);
 
 	const handleSendMessage = async () => {
+		if (!post?.posterId) {
+			setErrorMessage('Post data is missing.');
+			return;
+		}
+
 		if (!newMessage.trim()) return;
 
 		const createConversationRequest = {
