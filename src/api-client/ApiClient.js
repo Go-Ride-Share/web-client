@@ -133,8 +133,8 @@ export async function getAllConversations() {
 
 export async function pollConversation(conversationId, timeStamp) {
 	const endpoint = timeStamp
-		? `/PollConversation/conversationId=${conversationId}&timeStamp=${timeStamp}`
-		: `/PollConversation/conversationId=${conversationId}`;
+		? `/PollConversation?conversationId=${conversationId}&timeStamp=${timeStamp}`
+		: `/PollConversation?conversationId=${conversationId}`;
 	const result = await makeAuthenticatedRequest(endpoint, {
 		method: 'GET',
 	});

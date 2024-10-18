@@ -13,14 +13,7 @@ import {
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import { getPosts, getAllPosts } from '../api-client/ApiClient';
 import { Link } from 'react-router-dom';
-
-const isLoggedIn = () => {
-	const logicToken = localStorage.getItem('logic_token');
-	const dbToken = localStorage.getItem('db_token');
-	const userId = localStorage.getItem('user_id');
-
-	return logicToken && dbToken && userId;
-};
+import { isLoggedIn } from './Utils.js';
 
 const PostList = ({ usersRides }) => {
 	const theme = useTheme();
@@ -86,7 +79,7 @@ const PostList = ({ usersRides }) => {
 	};
 
 	return (
-		<Stack spacing={6} maxW="md" mx="auto" mt="8" fontFamily="CaviarDreams">
+		<Stack spacing={6} maxW="md" mx="auto" mt="4" fontFamily="CaviarDreams">
 			<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams">
 				{usersRides ? 'Your Rides' : 'Available Rides'}
 			</Heading>
@@ -97,7 +90,7 @@ const PostList = ({ usersRides }) => {
 				h="200%"
 				maxW="3xl"
 				mx="auto"
-				bg={theme.colors.primary}
+				bg={theme.colors.accent}
 				color={theme.colors.text}
 			>
 				{usersRides && !loggedIn ? (
@@ -132,7 +125,7 @@ const PostList = ({ usersRides }) => {
 									p="2"
 									boxShadow="md"
 									w="100%"
-									bg={theme.colors.accent}
+									bg={theme.colors.background}
 									color={theme.colors.text}
 								>
 									<Heading as="h3" size="md" mb="2">

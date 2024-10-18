@@ -9,6 +9,7 @@ import UserProfile from './UserProfile';
 import Post from './Post';
 import PostList from './PostList';
 import HomePage from './HomePage';
+import AllConversationsDrawer from './AllConversations'; 
 
 const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
 	return (
@@ -31,6 +32,7 @@ const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
 					<Outlet />
 				)}
 			</Box>
+			<AllConversationsDrawer /> 
 		</Box>
 	);
 };

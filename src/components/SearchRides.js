@@ -10,9 +10,9 @@ const SearchRides = () => {
 			maxW="3xl"
 			h="300px"
 			mx="auto"
-			bg={theme.colors.primary}
+			bg={theme.colors.accent}
+			mb="6"
 			color={theme.colors.text}
-			mt={4}
 			fontFamily="CaviarDreams"
 		>
 			<Card
@@ -21,7 +21,7 @@ const SearchRides = () => {
 				w="99%"
 				h="99%"
 				m="auto"
-				bg={theme.colors.accent}
+				bg={theme.colors.background}
 				color={theme.colors.text}
 			>
 				<Text fontSize="lg" color="gray.500" textAlign="center">

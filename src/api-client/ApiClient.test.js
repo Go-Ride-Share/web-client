@@ -543,7 +543,7 @@ describe('ApiClient', () => {
 			const result = await pollConversation(conversationId, timeStamp);
 
 			expect(fetch).toHaveBeenCalledWith(
-				`${API_BASE_URL}/PollConversation/conversationId=${conversationId}&timeStamp=${timeStamp}`,
+				`${API_BASE_URL}/PollConversation?conversationId=${conversationId}&timeStamp=${timeStamp}`,
 				{
 					method: 'GET',
 					headers: {
