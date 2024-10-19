@@ -159,6 +159,18 @@ describe('ApiClient', () => {
 		test('should make authenticated request successfully', async () => {
 			const mockResponse = { data: 'Some data' };
 
+			const mockLocalStorage = {
+				getItem: jest.fn((key) => {
+					if (key === 'logic_token') return 'logicToken123';
+					if (key === 'db_token') return 'dbToken456';
+					if (key === 'user_id') return 'user1';
+					return null;
+				}),
+			};
+			Object.defineProperty(window, 'localStorage', {
+				value: mockLocalStorage,
+			});
+
 			// Mocking the fetch API response
 			global.fetch = jest.fn(() =>
 				Promise.resolve({
