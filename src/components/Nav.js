@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import { FiEye } from 'react-icons/fi';
+import { isLoggedIn } from './Utils.js';
 import logo from '../assets/images/LogoNotBlack.png';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
@@ -24,14 +25,6 @@ const Nav = () => {
 	const [userPhoto, setUserPhoto] = useState(
 		localStorage.getItem('user_photo')
 	);
-
-	const isLoggedIn = () => {
-		return (
-			localStorage.getItem('logic_token') &&
-			localStorage.getItem('db_token') &&
-			localStorage.getItem('user_id')
-		);
-	};
 
 	const handleSignOut = () => {
 		localStorage.removeItem('logic_token');
