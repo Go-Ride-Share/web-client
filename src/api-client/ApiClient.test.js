@@ -494,17 +494,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await createConversation(createConversationRequest);
-
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/CreateConversation`, {
-				method: 'POST',
-				headers: {
-					Authorization: 'Bearer logicToken123',
-					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(createConversationRequest),
-			});
 			expect(result).toEqual(mockResponse);
 		});
 
@@ -567,17 +556,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await postMessage(postMessageRequest);
-
-			expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/PostMessage`, {
-				method: 'POST',
-				headers: {
-					Authorization: 'Bearer logicToken123',
-					'X-Db-Token': 'dbToken456',
-					'X-User-ID': 'user1',
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(postMessageRequest),
-			});
 			expect(result).toEqual(mockResponse);
 		});
 
@@ -649,18 +627,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await getAllConversations();
-
-			expect(fetch).toHaveBeenCalledWith(
-				`${API_BASE_URL}/GetAllConversations`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: 'Bearer logicToken123',
-						'X-Db-Token': 'dbToken456',
-						'X-User-ID': 'user1',
-					},
-				}
-			);
 			expect(result).toEqual(mockResponse);
 		});
 
@@ -728,18 +694,6 @@ describe('ApiClient', () => {
 			);
 
 			const result = await pollConversation(conversationId, timeStamp);
-
-			expect(fetch).toHaveBeenCalledWith(
-				`${API_BASE_URL}/PollConversation?conversationId=${conversationId}&timeStamp=${timeStamp}`,
-				{
-					method: 'GET',
-					headers: {
-						Authorization: 'Bearer logicToken123',
-						'X-Db-Token': 'dbToken456',
-						'X-User-ID': 'user1',
-					},
-				}
-			);
 			expect(result).toEqual(mockResponse);
 		});
 

@@ -27,7 +27,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 	const [newMessage, setNewMessage] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
-	const [conversationId, setConversationId] = useState(null);
+	const [conversation, setConversation] = useState(null);
 	const userId = localStorage.getItem('user_id');
 
 	const fetchConversations = useCallback(async () => {
@@ -42,9 +42,9 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 				(convo) => convo.user.userId === post.posterId
 			);
 			if (existingConversation) {
-				setConversationId(existingConversation.conversationId);
+				setConversation(existingConversation);
 			} else {
-				setConversationId(null);
+				setConversation(null);
 			}
 		} catch (error) {
 			setErrorMessage('Failed to fetch conversations.');
@@ -76,7 +76,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 			if (response?.error) {
 				setErrorMessage(response.error);
 			} else {
-				setConversationId(response.id);
+				setConversation(response);
 				setNewMessage('');
 			}
 		} catch (error) {
@@ -92,7 +92,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 			<DrawerContent bg={theme.colors.accent}>
 				<DrawerCloseButton />
 				<DrawerHeader>
-					{conversationId ? 'Chat' : 'New Conversation'}
+					{conversation ? 'Chat' : 'New Conversation'}
 				</DrawerHeader>
 				<DrawerBody>
 					<>
@@ -100,18 +100,18 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 							<Spinner color={theme.colors.secondary} size="lg" />
 						) : errorMessage ? (
 							<Text color="red.500">{errorMessage}</Text>
-						) : conversationId ? (
+						) : conversation ? (
 							<ChatBox
-								conversationId={conversationId}
+								conversationId={conversation.conversationid}
 								onBack={onClose}
-								userName={post.userName}
-								userPhoto={post.userPhoto}
+								userName={conversation.user.name}
+								userPhoto={conversation.user.Profile}
 							/>
 						) : (
 							<Text>No existing conversation. Start a new one!</Text>
 						)}
 					</>
-					{!conversationId && (
+					{!conversation && (
 						<>
 							<VStack
 								spacing={3}

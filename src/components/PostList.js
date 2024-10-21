@@ -87,7 +87,7 @@ const PostList = ({ usersRides }) => {
 
 	const handleContactClick = (post) => {
 		if (!loggedIn) {
-			//alert('Please log in to contact the post owner.');
+			alert('Please log in to contact the post owner.');
 			return;
 		}
 		setSelectedPost(post);

@@ -67,7 +67,6 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 					setErrorMessage('No messages found for this conversation.');
 				}
 			} catch (error) {
-				console.log(error);
 				setErrorMessage('Failed to fetch conversation messages.');
 			} finally {
 				setLoading(false);
