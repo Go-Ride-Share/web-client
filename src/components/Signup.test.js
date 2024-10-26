@@ -190,7 +190,7 @@ describe('Signup Component', () => {
 		// Mock a successful signup
 		ApiClient.createUser.mockResolvedValueOnce({
 			logic_token: 'logicToken123',
-			dbToken: 'dbToken456',
+			db_token: 'dbToken456',
 			user_id: 'user1',
 		});
 

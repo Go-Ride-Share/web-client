@@ -74,7 +74,7 @@ describe('Login Component', () => {
 		// Mock a successful login
 		ApiClient.login.mockResolvedValueOnce({
 			logic_token: 'logicToken123',
-			dbToken: 'dbToken456',
+			db_token: 'dbToken456',
 			user_id: 'user1'
 		});
 

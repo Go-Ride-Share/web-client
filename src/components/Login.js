@@ -31,11 +31,11 @@ const Login = () => {
 		if (result.error) {
 			setError(result.error);
 		} else {
-			const { logic_token, dbToken, user_id } = result;
+			const { logic_token, db_token, user_id } = result;
 
-			if (logic_token && dbToken && user_id) {
+			if (logic_token && db_token && user_id) {
 				localStorage.setItem('logic_token', logic_token);
-				localStorage.setItem('db_token', dbToken);
+				localStorage.setItem('db_token', db_token);
 				localStorage.setItem('user_id', user_id);
 				localStorage.setItem('user_photo', result.photo);
 
