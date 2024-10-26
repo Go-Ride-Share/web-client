@@ -43,6 +43,10 @@ const PostList = ({ usersRides }) => {
 						response = await getPosts(userId);
 					} else {
 						response = await getAllPosts();
+
+						if (loggedIn && Array.isArray(response)) {
+							response = response.filter(post => post.posterId !== userId);
+						}
 					}
 
 					if (response?.error) {
@@ -103,7 +107,7 @@ const PostList = ({ usersRides }) => {
 				p="3"
 				boxShadow="xl"
 				w="100%"
-				h="38rem"
+				h="auto"
 				maxW="3xl"
 				mx="auto"
 				bg={theme.colors.accent}
