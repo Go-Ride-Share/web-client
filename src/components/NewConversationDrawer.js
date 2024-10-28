@@ -37,6 +37,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 		}
 
 		try {
+			setLoading(true);
 			const conversations = await getAllConversations(userId);
 			const existingConversation = conversations.find(
 				(convo) => convo.user.userId === post.posterId
@@ -48,6 +49,8 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 			}
 		} catch (error) {
 			setErrorMessage('Failed to fetch conversations.');
+		} finally {
+			setLoading(false);
 		}
 	}, [userId, post?.posterId]);
 
@@ -105,13 +108,13 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 								conversationId={conversation.conversationid}
 								onBack={onClose}
 								userName={conversation.user.name}
-								userPhoto={conversation.user.Profile}
+								userPhoto={conversation.user.photo}
 							/>
 						) : (
 							<Text>No existing conversation. Start a new one!</Text>
 						)}
 					</>
-					{!conversation && (
+					{!conversation && !loading && (
 						<>
 							<VStack
 								spacing={3}

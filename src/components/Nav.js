@@ -31,6 +31,11 @@ const Nav = () => {
 		localStorage.removeItem('db_token');
 		localStorage.removeItem('user_id');
 		localStorage.removeItem('user_photo');
+		Object.keys(localStorage).forEach((key) => {
+			if (key.startsWith('conversation-')) {
+					localStorage.removeItem(key);
+			}
+	});
 		navigate('/');
 	};
 

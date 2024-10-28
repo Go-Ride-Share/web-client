@@ -1,5 +1,5 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import Nav from './Nav';
@@ -9,9 +9,18 @@ import UserProfile from './UserProfile';
 import Post from './Post';
 import PostList from './PostList';
 import HomePage from './HomePage';
-import AllConversationsDrawer from './AllConversations'; 
+import AllConversationsDrawer from './AllConversations';
+import { isLoggedIn } from './Utils.js';
 
 const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (isLoggedIn() && (login || signup)) {
+			navigate('/');
+		}
+	}, [login, signup, navigate]);
+
 	return (
 		<Box>
 			<Nav />

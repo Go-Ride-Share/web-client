@@ -66,7 +66,7 @@ const AllConversationsDrawer = () => {
 	const handleConversationClick = (conversation) => {
 		setSelectedConversationId(conversation.conversationId);
 		setSelectedUserName(conversation.user.name);
-		setSelectedUserPhoto(conversation.user.Profile);
+		setSelectedUserPhoto(conversation.user.photo);
 	};
 
 	return (
@@ -135,7 +135,7 @@ const AllConversationsDrawer = () => {
 											onClick={() => handleConversationClick(conversation)}
 										>
 											<Image
-												src={conversation.user.Profile}
+												src={conversation.user.photo}
 												alt={conversation.user.name}
 												borderRadius="full"
 												boxSize="40px"

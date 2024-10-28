@@ -607,7 +607,7 @@ describe('ApiClient', () => {
 			const mockResponse = [
 				{
 					conversationId: 'ccccc-cccccccccc-ccccc',
-					user: { userId: 'user1', name: 'Bob', profile: 'url/to/profile' },
+					user: { userId: 'user1', name: 'Bob', photo: 'url/to/profile' },
 					messages: [
 						{
 							timeStamp: '2023-09-20T15:00:00Z',
@@ -672,7 +672,7 @@ describe('ApiClient', () => {
 			});
 			const mockResponse = {
 				conversationId: 'ccccc-cccccccccc-ccccc',
-				user: { userId: 'user1', name: 'Bob', profile: 'url/to/profile' },
+				user: { userId: 'user1', name: 'Bob', photo: 'url/to/profile' },
 				messages: [
 					{
 						timeStamp: '2023-09-20T15:00:00Z',

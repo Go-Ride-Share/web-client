@@ -21,28 +21,38 @@ const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleEmailChange = (e) => setEmail(e.target.value);
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 
 	const handleLogin = async () => {
+		setIsLoading(true);
+		setError('');
 		const hashedPassword = SHA256(password).toString();
-		const result = await login({ email, password: hashedPassword });
-		if (result.error) {
-			setError(result.error);
-		} else {
-			const { logic_token, db_token, user_id } = result;
 
-			if (logic_token && db_token && user_id) {
-				localStorage.setItem('logic_token', logic_token);
-				localStorage.setItem('db_token', db_token);
-				localStorage.setItem('user_id', user_id);
-				localStorage.setItem('user_photo', result.photo);
-
-				navigate('/');
+		try {
+			const result = await login({ email, password: hashedPassword });
+			if (result.error) {
+				setError(result.error);
 			} else {
-				setError('Signup failed: Missing required token data.');
+				const { logic_token, db_token, user_id } = result;
+
+				if (logic_token && db_token && user_id) {
+					localStorage.setItem('logic_token', logic_token);
+					localStorage.setItem('db_token', db_token);
+					localStorage.setItem('user_id', user_id);
+					localStorage.setItem('user_photo', result.photo);
+
+					navigate('/');
+				} else {
+					setError('Login failed: Missing required token data.');
+				}
 			}
+		} catch (error) {
+			setError('An error occurred during login.');
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -95,10 +105,14 @@ const Login = () => {
 						}}
 						boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
 						size="md"
-						isDisabled={!email || !password}
+						isDisabled={!email || !password || isLoading}
 						onClick={handleLogin}
 					>
-						Login
+						{isLoading ? (
+							<span className="loading-dots">Logging in...</span>
+						) : (
+							'Login'
+						)}
 					</CustomButton>
 					<Text textAlign="left">
 						Don't have an account?{' '}

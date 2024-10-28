@@ -73,12 +73,12 @@ describe('AllConversationsDrawer Component', () => {
 		ApiClient.getAllConversations.mockResolvedValueOnce([
 			{
 				conversationId: '1',
-				user: { name: 'Alice', Profile: 'profile1.png' },
+				user: { name: 'Alice', photo: 'profile1.png' },
 				messages: [{ contents: 'Hello, Alice!' }],
 			},
 			{
 				conversationId: '2',
-				user: { name: 'Bob', Profile: 'profile2.png' },
+				user: { name: 'Bob', photo: 'profile2.png' },
 				messages: [{ contents: 'Hi, Bob!' }],
 			},
 		]);
@@ -105,7 +105,7 @@ describe('AllConversationsDrawer Component', () => {
 		ApiClient.getAllConversations.mockResolvedValueOnce([
 			{
 				conversationId: '1',
-				user: { name: 'Alice', Profile: 'profile1.png' },
+				user: { name: 'Alice', photo: 'profile1.png' },
 				messages: [{ contents: 'Hello, Alice!' }],
 			},
 		]);

@@ -97,6 +97,10 @@ describe('NewConversationDrawer', () => {
 
 		renderComponent();
 
+		await waitFor(() => {
+			expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+		});
+
 		const input = screen.getByPlaceholderText(/type your message/i);
 		fireEvent.change(input, { target: { value: 'Hello' } });
 
