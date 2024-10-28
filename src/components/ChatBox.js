@@ -150,29 +150,32 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 				) : errorMessage ? (
 					<Text color="red.500">{errorMessage}</Text>
 				) : (
-					messages.map((message, index) => (
-						<Box
-							key={index}
-							alignSelf={
-								message.senderId === userId ? 'flex-end' : 'flex-start'
-							}
-							bg={
-								message.senderId === userId
-									? theme.colors.secondary
-									: theme.colors.primary
-							}
-							color={theme.colors.text}
-							borderRadius="md"
-							padding="2"
-							maxWidth="75%"
-						>
-							<Text>{message.contents}</Text>
-							<Text fontSize="xs" color="gray.500">
-								{new Date(message.timeStamp).toLocaleString()}
-							</Text>
-						</Box>
-					))
+					messages
+						.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp))
+						.map((message, index) => (
+							<Box
+								key={index}
+								alignSelf={
+									message.senderId === userId ? 'flex-end' : 'flex-start'
+								}
+								bg={
+									message.senderId === userId
+										? theme.colors.secondary
+										: theme.colors.primary
+								}
+								color={theme.colors.text}
+								borderRadius="md"
+								padding="2"
+								maxWidth="75%"
+							>
+								<Text>{message.contents}</Text>
+								<Text fontSize="xs" color="gray.500">
+									{new Date(message.timeStamp).toLocaleString()}
+								</Text>
+							</Box>
+						))
 				)}
+
 				<div ref={messagesEndRef} />
 			</VStack>
 			<InputGroup mt={4}>

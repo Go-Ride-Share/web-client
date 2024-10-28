@@ -32,11 +32,15 @@ const Nav = () => {
 		localStorage.removeItem('user_id');
 		localStorage.removeItem('user_photo');
 		Object.keys(localStorage).forEach((key) => {
-			if (key.startsWith('conversation-')) {
-					localStorage.removeItem(key);
+			if (key.startsWith('conversation_')) {
+				localStorage.removeItem(key);
 			}
-	});
-		navigate('/');
+		});
+		if (window.location.pathname === '/') {
+			window.location.reload();
+		} else {
+			navigate('/');
+		}
 	};
 
 	useEffect(() => {

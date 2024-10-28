@@ -45,7 +45,7 @@ const PostList = ({ usersRides }) => {
 						response = await getAllPosts();
 
 						if (loggedIn && Array.isArray(response)) {
-							response = response.filter(post => post.posterId !== userId);
+							response = response.filter((post) => post.posterId !== userId);
 						}
 					}
 
@@ -148,6 +148,7 @@ const PostList = ({ usersRides }) => {
 										w="100%"
 										bg={theme.colors.background}
 										color={theme.colors.text}
+										position="relative" 
 									>
 										<HStack justify="space-between" w="100%">
 											<Box flex="1" mr={4}>
@@ -181,27 +182,22 @@ const PostList = ({ usersRides }) => {
 													{post.seatsAvailable}
 												</Text>
 											</Box>
-											<Box
-												display="flex"
-												flexDirection="column"
-												justifyContent="flex-end"
-												height="100%"
-											>
-												{!usersRides && (
+											{!usersRides && (
+												<Box position="absolute" bottom="2" right="2">
 													<Tooltip
 														label={!loggedIn ? 'Login to contact' : ''}
 														shouldWrapChildren
 														isDisabled={loggedIn}
 													>
 														<CustomButton
-															disabled={!loggedIn}
+															isDisabled={!loggedIn}
 															onClick={() => handleContactClick(post)}
 														>
 															Contact
 														</CustomButton>
 													</Tooltip>
-												)}
-											</Box>
+												</Box>
+											)}
 										</HStack>
 									</Card>
 								))

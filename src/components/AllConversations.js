@@ -19,6 +19,7 @@ import { getAllConversations } from '../api-client/ApiClient';
 import { ChatIcon } from '@chakra-ui/icons';
 import { isLoggedIn } from './Utils.js';
 import ChatBox from './ChatBox';
+import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
 const AllConversationsDrawer = () => {
 	const theme = useTheme();
@@ -66,7 +67,7 @@ const AllConversationsDrawer = () => {
 	const handleConversationClick = (conversation) => {
 		setSelectedConversationId(conversation.conversationId);
 		setSelectedUserName(conversation.user.name);
-		setSelectedUserPhoto(conversation.user.photo);
+		setSelectedUserPhoto(conversation.user.photo || DefaultPhoto);
 	};
 
 	return (
@@ -135,7 +136,7 @@ const AllConversationsDrawer = () => {
 											onClick={() => handleConversationClick(conversation)}
 										>
 											<Image
-												src={conversation.user.photo}
+												src={conversation.user.photo || DefaultPhoto}
 												alt={conversation.user.name}
 												borderRadius="full"
 												boxSize="40px"
