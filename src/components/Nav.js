@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
 import { FiEye } from 'react-icons/fi';
+import { isLoggedIn } from './Utils.js';
 import logo from '../assets/images/LogoNotBlack.png';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
@@ -25,20 +26,21 @@ const Nav = () => {
 		localStorage.getItem('user_photo')
 	);
 
-	const isLoggedIn = () => {
-		return (
-			localStorage.getItem('logic_token') &&
-			localStorage.getItem('db_token') &&
-			localStorage.getItem('user_id')
-		);
-	};
-
 	const handleSignOut = () => {
 		localStorage.removeItem('logic_token');
 		localStorage.removeItem('db_token');
 		localStorage.removeItem('user_id');
 		localStorage.removeItem('user_photo');
-		navigate('/');
+		Object.keys(localStorage).forEach((key) => {
+			if (key.startsWith('conversation_')) {
+				localStorage.removeItem(key);
+			}
+		});
+		if (window.location.pathname === '/') {
+			window.location.reload();
+		} else {
+			navigate('/');
+		}
 	};
 
 	useEffect(() => {

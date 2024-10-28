@@ -38,6 +38,7 @@ const Signup = () => {
 	const [emailError, setEmailError] = useState('');
 	const [phoneError, setPhoneError] = useState('');
 	const [signupError, setSignupError] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleNameChange = (e) => setName(e.target.value);
 
@@ -95,6 +96,8 @@ const Signup = () => {
 	};
 
 	const handleSignup = async () => {
+		setIsLoading(true);
+		setSignupError('');
 		const hashedPassword = sha256(password).toString();
 		const userRequest = {
 			name,
@@ -105,15 +108,28 @@ const Signup = () => {
 			photo,
 		};
 
-		const result = await createUser(userRequest);
-		if (result.error) {
-			setSignupError(result.error);
-		} else {
-			localStorage.setItem('logic_token', result.logic_token);
-			localStorage.setItem('db_token', result.db_token);
-			localStorage.setItem('user_id', result.user_id);
-			localStorage.setItem('user_photo', result.photo);
-			navigate('/');
+		try {
+			const result = await createUser(userRequest);
+			if (result.error) {
+				setSignupError(result.error);
+			} else {
+				const { logic_token, db_token, user_id } = result;
+
+				if (logic_token && db_token && user_id) {
+					localStorage.setItem('logic_token', logic_token);
+					localStorage.setItem('db_token', db_token);
+					localStorage.setItem('user_id', user_id);
+					localStorage.setItem('user_photo', result.photo);
+
+					navigate('/');
+				} else {
+					setSignupError('Signup failed: Missing required token data.');
+				}
+			}
+		} catch (error) {
+			setSignupError('An error occurred during signup.');
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -208,7 +224,9 @@ const Signup = () => {
 								onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 								icon={showConfirmPassword ? <FiEyeOff /> : <FiEye />}
 								aria-label={
-									showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+									showConfirmPassword
+										? 'Hide confirm password'
+										: 'Show confirm password'
 								}
 								variant="link"
 							/>
@@ -273,10 +291,15 @@ const Signup = () => {
 
 					<CustomButton
 						size="md"
-						isDisabled={!isFormValid}
+						isLoading={isLoading}
+						isDisabled={!isFormValid || isLoading}
 						onClick={handleSignup}
 					>
-						Sign Up
+						{isLoading ? (
+							<span className="loading-dots">Creating Account...</span>
+						) : (
+							'Sign Up'
+						)}
 					</CustomButton>
 
 					<Text textAlign="left">
