@@ -118,7 +118,7 @@ const AllConversationsDrawer = () => {
 								userPhoto={selectedUserPhoto}
 							/>
 						) : (
-							<Box maxHeight="70vh" overflowY="auto">
+							<Box maxHeight="auto" overflowY="auto">
 								<VStack spacing={3}>
 									{conversations.map((conversation) => (
 										<Box

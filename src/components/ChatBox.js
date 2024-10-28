@@ -25,45 +25,49 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 	const userId = localStorage.getItem('user_id');
 	const storageKey = `conversation_${conversationId}`;
 	const [latestMessageTimestamp, setLatestMessageTimestamp] = useState(null);
-
 	const messagesEndRef = useRef(null);
 
 	useEffect(() => {
 		const fetchMessages = async () => {
 			setLoading(true);
 			try {
-				const storedMessages = JSON.parse(localStorage.getItem(storageKey));
+				// Retrieve stored messages from localStorage
+				const storedMessages =
+					JSON.parse(localStorage.getItem(storageKey)) || [];
+				setMessages(storedMessages);
 
-				if (storedMessages && storedMessages.length > 0) {
-					setMessages(storedMessages);
-					const latestMessage = storedMessages[storedMessages.length - 1];
-					if (latestMessage?.timeStamp) {
-						setLatestMessageTimestamp(latestMessage.timeStamp);
-					}
-				}
+				// Get the timestamp of the last message
+				const lastStoredMessage = storedMessages[storedMessages.length - 1];
+				const lastTimestamp =
+					lastStoredMessage?.timeStamp || latestMessageTimestamp;
 
+				// Poll new messages that are after the last known timestamp
 				const conversation = await pollConversation(
 					conversationId,
-					latestMessageTimestamp
+					lastTimestamp
 				);
 
-				if (
-					conversation &&
-					typeof conversation === 'object' &&
-					Array.isArray(conversation.messages)
-				) {
-					const updatedMessages = storedMessages
-						? [...storedMessages, ...conversation.messages]
-						: conversation.messages;
+				if (conversation && Array.isArray(conversation.messages)) {
+					// Filter out messages that are already present in the storedMessages
+					const newMessages = conversation.messages.filter(
+						(msg) =>
+							!storedMessages.some(
+								(storedMsg) => storedMsg.timeStamp === msg.timeStamp
+							)
+					);
 
-					setMessages(updatedMessages);
-					localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
+					// Only update the state and localStorage if there are new messages
+					if (newMessages.length > 0) {
+						const updatedMessages = [...storedMessages, ...newMessages];
 
-					const latestMessage = updatedMessages[updatedMessages.length - 1];
-					if (latestMessage?.timeStamp) {
+						setMessages(updatedMessages);
+						localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
+
+						// Update the latest timestamp based on the new messages
+						const latestMessage = updatedMessages[updatedMessages.length - 1];
 						setLatestMessageTimestamp(latestMessage.timeStamp);
 					}
-				} else if (!storedMessages) {
+				} else if (storedMessages.length === 0) {
 					setErrorMessage('No messages found for this conversation.');
 				}
 			} catch (error) {
@@ -75,42 +79,13 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 
 		fetchMessages();
 
-		const pollMessages = setInterval(async () => {
-			try {
-				if (latestMessageTimestamp) {
-					const newMessages = await pollConversation(
-						conversationId,
-						latestMessageTimestamp
-					);
-					if (
-						newMessages &&
-						Array.isArray(newMessages.messages) &&
-						newMessages.messages.length > 0
-					) {
-						setMessages((prevMessages) => {
-							const updatedMessages = [
-								...prevMessages,
-								...newMessages.messages,
-							];
-							localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
-							return updatedMessages;
-						});
-
-						const latestMessage =
-							newMessages.messages[newMessages.messages.length - 1];
-						if (latestMessage?.timeStamp) {
-							setLatestMessageTimestamp(latestMessage.timeStamp);
-						}
-					}
-				}
-			} catch (error) {
-				console.error('Error polling for new messages:', error);
-			}
-		}, 1000);
+		// Set up polling to fetch new messages periodically
+		const pollMessages = setInterval(fetchMessages, 3000);
 		return () => clearInterval(pollMessages);
 	}, [conversationId, latestMessageTimestamp, storageKey]);
 
 	useEffect(() => {
+		// Auto-scroll to the latest message when messages update
 		if (
 			messagesEndRef.current &&
 			typeof messagesEndRef.current.scrollIntoView === 'function'
@@ -132,20 +107,8 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 			const response = await postMessage(postMessageRequest);
 			if (response?.error) {
 				setErrorMessage(response.error);
-			} else {
-				const newMsg = {
-					contents: newMessage,
-					timeStamp: new Date().toISOString(),
-					senderId: userId,
-				};
-				setMessages((prevMessages) => {
-					const updatedMessages = [...prevMessages, newMsg];
-					localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
-					return updatedMessages;
-				});
-				setNewMessage('');
-				setLatestMessageTimestamp(newMsg.timeStamp);
 			}
+			setNewMessage('');
 		} catch (error) {
 			setErrorMessage('Failed to send the message.');
 		} finally {

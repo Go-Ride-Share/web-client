@@ -105,7 +105,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 							<Text color="red.500">{errorMessage}</Text>
 						) : conversation ? (
 							<ChatBox
-								conversationId={conversation.conversationid}
+								conversationId={conversation.conversationId}
 								onBack={onClose}
 								userName={conversation.user.name}
 								userPhoto={conversation.user.photo}
@@ -114,7 +114,7 @@ const NewConversationDrawer = ({ isOpen, onClose, post }) => {
 							<Text>No existing conversation. Start a new one!</Text>
 						)}
 					</>
-					{!conversation && !loading && (
+					{!conversation && !loading && !errorMessage && (
 						<>
 							<VStack
 								spacing={3}
