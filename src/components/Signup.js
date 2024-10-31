@@ -16,7 +16,7 @@ import {
 	IconButton,
 } from '@chakra-ui/react';
 import { FiUpload, FiEye, FiEyeOff } from 'react-icons/fi';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
 import { createUser } from '../api-client/ApiClient';
@@ -24,7 +24,6 @@ import sha256 from 'crypto-js/sha256';
 
 const Signup = () => {
 	const theme = useTheme();
-	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [name, setName] = useState('');
