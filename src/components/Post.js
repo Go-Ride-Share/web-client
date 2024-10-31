@@ -123,7 +123,7 @@ const Post = () => {
 			destinationLng: Number(destinationLng),
 			destinationLat: Number(destinationLat),
 			description: String(description),
-			departureDate: String(departureDate),
+			departureDate: String(departureDate.toISOString()),
 			price: Number(price),
 			seatsAvailable: Number(seatsAvailable),
 		};
