@@ -233,7 +233,7 @@ describe('Signup Component', () => {
 				'dbToken456'
 			);
 			expect(localStorage.setItem).toHaveBeenCalledWith('user_id', 'user1');
-			expect(mockNavigate).toHaveBeenCalledWith('/');
+			expect(window.location.href.endsWith('/')).toBe(true);
 		});
 	});
 

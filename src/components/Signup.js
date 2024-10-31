@@ -123,7 +123,7 @@ const Signup = () => {
 					localStorage.setItem('user_id', user_id);
 					localStorage.setItem('user_photo', result.photo);
 
-					navigate('/');
+					window.location.href = '/';
 				} else {
 					setSignupError('Signup failed: Missing required token data.');
 				}
