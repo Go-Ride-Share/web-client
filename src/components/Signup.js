@@ -65,8 +65,10 @@ const Signup = () => {
 
 	const handleConfirmPasswordChange = (e) => {
 		setConfirmPassword(e.target.value);
-		if (password && e.target.value !== password) {
+		if (e.target.value !== password) {
 			setPasswordError('Passwords do not match.');
+		} else if (password.length < 8) {
+			setPasswordError('Password must be at least 8 characters.');
 		} else {
 			setPasswordError('');
 		}
