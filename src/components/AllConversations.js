@@ -121,41 +121,55 @@ const AllConversationsDrawer = () => {
 						) : (
 							<Box maxHeight="auto" overflowY="auto">
 								<VStack spacing={3}>
-									{conversations.map((conversation) => (
-										<Box
-											key={conversation.conversationId}
-											borderWidth="1px"
-											borderRadius="md"
-											padding="2"
-											display="flex"
-											alignItems="center"
-											width="full"
-											bg={theme.colors.background}
-											color={theme.colors.text}
-											cursor="pointer"
-											onClick={() => handleConversationClick(conversation)}
+									{conversations.length === 0 ? (
+										<Text
+											color={theme.colors.textLight}
+											fontSize="lg"
+											mt={4}
+											textAlign="center"
 										>
-											<Image
-												src={conversation.user.photo || DefaultPhoto}
-												alt={conversation.user.name}
-												borderRadius="full"
-												boxSize="40px"
-												mr={3}
-											/>
-											<Box>
-												<Text fontWeight="bold">{conversation.user.name}</Text>
-												<Text>
-													{conversation.messages[
-														conversation.messages.length - 1
-													].contents.length > 50
-														? `${conversation.messages[conversation.messages.length - 1].contents.slice(0, 50)}...`
-														: conversation.messages[
-																conversation.messages.length - 1
-															].contents}
-												</Text>
+											No conversations yet. Start a new conversation to connect
+											with others!
+										</Text>
+									) : (
+										conversations.map((conversation) => (
+											<Box
+												key={conversation.conversationId}
+												borderWidth="1px"
+												borderRadius="md"
+												padding="2"
+												display="flex"
+												alignItems="center"
+												width="full"
+												bg={theme.colors.background}
+												color={theme.colors.text}
+												cursor="pointer"
+												onClick={() => handleConversationClick(conversation)}
+											>
+												<Image
+													src={conversation.user.photo || DefaultPhoto}
+													alt={conversation.user.name}
+													borderRadius="full"
+													boxSize="40px"
+													mr={3}
+												/>
+												<Box>
+													<Text fontWeight="bold">
+														{conversation.user.name}
+													</Text>
+													<Text>
+														{conversation.messages[
+															conversation.messages.length - 1
+														].contents.length > 50
+															? `${conversation.messages[conversation.messages.length - 1].contents.slice(0, 50)}...`
+															: conversation.messages[
+																	conversation.messages.length - 1
+																].contents}
+													</Text>
+												</Box>
 											</Box>
-										</Box>
-									))}
+										))
+									)}
 								</VStack>
 							</Box>
 						)}

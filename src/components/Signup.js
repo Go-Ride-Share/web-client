@@ -16,7 +16,7 @@ import {
 	IconButton,
 } from '@chakra-ui/react';
 import { FiUpload, FiEye, FiEyeOff } from 'react-icons/fi';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
 import { createUser } from '../api-client/ApiClient';
@@ -24,7 +24,6 @@ import sha256 from 'crypto-js/sha256';
 
 const Signup = () => {
 	const theme = useTheme();
-	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [name, setName] = useState('');
@@ -65,8 +64,10 @@ const Signup = () => {
 
 	const handleConfirmPasswordChange = (e) => {
 		setConfirmPassword(e.target.value);
-		if (password && e.target.value !== password) {
+		if (e.target.value !== password) {
 			setPasswordError('Passwords do not match.');
+		} else if (password.length < 8) {
+			setPasswordError('Password must be at least 8 characters.');
 		} else {
 			setPasswordError('');
 		}
@@ -121,7 +122,7 @@ const Signup = () => {
 					localStorage.setItem('user_id', user_id);
 					localStorage.setItem('user_photo', result.photo);
 
-					navigate('/');
+					window.location.href = '/';
 				} else {
 					setSignupError('Signup failed: Missing required token data.');
 				}

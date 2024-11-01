@@ -46,7 +46,7 @@ const Nav = () => {
 	useEffect(() => {
 		const updatePhoto = () => {
 			const storedPhoto = localStorage.getItem('user_photo');
-			setUserPhoto(storedPhoto);
+			setUserPhoto(storedPhoto || DefaultPhoto);
 		};
 		updatePhoto();
 		window.addEventListener('storage', updatePhoto);
