@@ -1,6 +1,6 @@
 {
 	"name": "go-ride-share",
-	"version": "0.2.1",
+	"version": "1.0.0",
 	"private": true,
 	"dependencies": {
 		"@chakra-ui/icons": "^2.2.4",

@@ -17,16 +17,7 @@ export async function createUser(createUserRequest) {
 		},
 		body: JSON.stringify(createUserRequest),
 	});
-	const result = await handleResponse(response);
-	if (result.error) {
-		return { error: result.error };
-	}
-	return {
-		logic_token: result.logic_token,
-		db_token: result.db_token,
-		user_id: result.user_id,
-		photo: result.photo,
-	};
+	return handleResponse(response);
 }
 
 export async function login(loginRequest) {
@@ -37,54 +28,25 @@ export async function login(loginRequest) {
 		},
 		body: JSON.stringify(loginRequest),
 	});
-	const result = await handleResponse(response);
-	if (result.error) {
-		return { error: result.error };
-	}
-	return {
-		logic_token: result.logic_token,
-		db_token: result.db_token,
-		user_id: result.user_id,
-		photo: result.photo,
-	};
+	return handleResponse(response);
 }
 
 export async function getUser() {
-	try {
-		const result = await makeAuthenticatedRequest('/GetUser', {
-			method: 'GET',
-		});
-		if (result.error) {
-			return { error: result.error };
-		}
-		return {
-			name: result.name,
-			email: result.email,
-			bio: result.bio,
-			phone: result.phone,
-			photo: result.photo,
-		};
-	} catch (error) {
-		return { error: 'Failed to fetch user data' };
-	}
+	const result = await makeAuthenticatedRequest('/GetUser', {
+		method: 'GET',
+	});
+	return result;
 }
 
 export async function editUser(editUserRequest) {
-	try {
-		const result = await makeAuthenticatedRequest('/EditUser', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(editUserRequest),
-		});
-		if (result.error) {
-			return { error: result.error };
-		}
-		return result;
-	} catch (error) {
-		return { error: 'Failed to update user data' };
-	}
+	const result = await makeAuthenticatedRequest('/EditUser', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(editUserRequest),
+	});
+	return result;
 }
 
 export async function makeAuthenticatedRequest(endpoint, options = {}) {
@@ -108,39 +70,73 @@ export async function makeAuthenticatedRequest(endpoint, options = {}) {
 }
 
 export async function savePost(savePostRequest) {
-	const response = await makeAuthenticatedRequest(`/SavePost`, {
+	const result = await makeAuthenticatedRequest('/SavePost', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(savePostRequest),
 	});
-
-	if (response.error) {
-		return { error: response.error };
-	}
-	return { token: response.token };
+	return result;
 }
 
 export async function getPosts(userId) {
-	try {
-		if (!userId) {
-			return { error: 'User ID is required' };
-		}
-
-		const result = await makeAuthenticatedRequest(
-			`/getPosts?userId=${userId}`,
-			{
-				method: 'GET',
-			}
-		);
-
-		if (result.error) {
-			return { error: result.error };
-		}
-
-		return result;
-	} catch (error) {
-		return { error: 'Failed to fetch posts' };
+	if (!userId) {
+		return { error: 'User ID is required' };
 	}
+
+	const result = await makeAuthenticatedRequest(`/getPosts?userId=${userId}`, {
+		method: 'GET',
+	});
+	return result;
+}
+
+export async function getAllPosts() {
+	const response = await fetch(`${API_AUTH_URL}/getAllPosts`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	return handleResponse(response);
+}
+
+export async function createConversation(createConversationRequest) {
+	const result = await makeAuthenticatedRequest('/CreateConversation', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(createConversationRequest),
+	});
+	return result;
+}
+
+export async function postMessage(postMessageRequest) {
+	const result = await makeAuthenticatedRequest('/PostMessage', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(postMessageRequest),
+	});
+	return result;
+}
+
+export async function getAllConversations() {
+	const result = await makeAuthenticatedRequest('/GetAllConversations', {
+		method: 'GET',
+	});
+	return result; 
+}
+
+export async function pollConversation(conversationId, timeStamp) {
+	const endpoint = timeStamp
+		? `/PollConversation?conversationId=${conversationId}&timestamp=${timeStamp}`
+		: `/PollConversation?conversationId=${conversationId}`;
+	const result = await makeAuthenticatedRequest(endpoint, {
+		method: 'GET',
+	});
+	return result;
 }

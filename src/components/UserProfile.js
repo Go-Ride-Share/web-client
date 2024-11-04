@@ -21,6 +21,7 @@ import { FiEdit, FiUpload } from 'react-icons/fi';
 import CustomButton from './Button';
 import { getUser, editUser } from '../api-client/ApiClient';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
+import { isLoggedIn } from './Utils.js';
 
 const UserProfile = () => {
 	const theme = useTheme();
@@ -43,14 +44,6 @@ const UserProfile = () => {
 	});
 	const [phoneError, setPhoneError] = useState('');
 	const [isChanged, setIsChanged] = useState(false);
-
-	const isLoggedIn = () => {
-		return (
-			localStorage.getItem('logic_token') &&
-			localStorage.getItem('db_token') &&
-			localStorage.getItem('user_id')
-		);
-	};
 
 	const fetchUserData = async () => {
 		setLoading(true);
@@ -133,6 +126,7 @@ const UserProfile = () => {
 			}
 			fetchUserData();
 			setIsChanged(false);
+			window.location.href = '/user';
 		}
 	};
 
