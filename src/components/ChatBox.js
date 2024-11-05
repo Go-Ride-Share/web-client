@@ -26,6 +26,7 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 	const storageKey = `conversation_${conversationId}`;
 	const [latestMessageTimestamp, setLatestMessageTimestamp] = useState(null);
 	const messagesEndRef = useRef(null);
+	const maxMessageLength = 500;
 
 	useEffect(() => {
 		const fetchMessages = async () => {
@@ -182,7 +183,11 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 				<Input
 					placeholder="Type your message..."
 					value={newMessage}
-					onChange={(e) => setNewMessage(e.target.value)}
+					onChange={(e) => {
+						if (e.target.value.length <= maxMessageLength) {
+							setNewMessage(e.target.value);
+						}
+					}}
 					bg={theme.colors.background}
 				/>
 				<InputRightElement>
@@ -198,6 +203,9 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 					</IconButton>
 				</InputRightElement>
 			</InputGroup>
+			<Text fontSize="xs" color="gray.500" mt={1}>
+				{newMessage.length}/{maxMessageLength} characters
+			</Text>
 		</Box>
 	);
 };
