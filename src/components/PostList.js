@@ -41,11 +41,14 @@ const PostList = ({ usersRides }) => {
 				setLoading(true);
 				let response = null;
 
+				const limit = postsPerPage;
+				const offset = (currentPage - 1) * postsPerPage;
+
 				try {
 					if (usersRides) {
-						response = await getPosts(userId);
+						response = await getPosts(userId, limit, offset);
 					} else {
-						response = await getAllPosts();
+						response = await getAllPosts(limit, offset);
 
 						if (loggedIn && Array.isArray(response)) {
 							response = response.filter((post) => post.posterId !== userId);
@@ -73,7 +76,7 @@ const PostList = ({ usersRides }) => {
 		} else {
 			setLoading(false);
 		}
-	}, [loggedIn, usersRides]);
+	}, [loggedIn, usersRides, currentPage]);
 
 	const indexOfLastPost = currentPage * postsPerPage;
 	const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -102,13 +105,7 @@ const PostList = ({ usersRides }) => {
 	};
 
 	return (
-		<Stack
-			spacing={6}
-			maxW="md"
-			mx="auto"
-			mt="4"
-			fontFamily="CaviarDreams"
-		>
+		<Stack spacing={6} maxW="md" mx="auto" mt="4" fontFamily="CaviarDreams">
 			<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams">
 				{usersRides ? 'Your Rides' : 'Available Rides'}
 			</Heading>
@@ -201,23 +198,23 @@ const PostList = ({ usersRides }) => {
 													h="100%"
 													minH="18vh"
 												>
-													{post.user &&(
-													<Box>
-														<Image
-															src={post.user.photo || DefaultPhoto}
-															alt="User photo"
-															boxSize="50px"
-															borderRadius="full"
-															mb="2"
-														/>
-														<Text
-															fontSize="sm"
-															fontWeight="bold"
-															textAlign="center"
-														>
-															{post.user.name.split(' ')[0]}
-														</Text>
-													</Box>
+													{post.user && (
+														<Box>
+															<Image
+																src={post.user.photo || DefaultPhoto}
+																alt="User photo"
+																boxSize="50px"
+																borderRadius="full"
+																mb="2"
+															/>
+															<Text
+																fontSize="sm"
+																fontWeight="bold"
+																textAlign="center"
+															>
+																{post.user.name.split(' ')[0]}
+															</Text>
+														</Box>
 													)}
 													<Box mt="auto" w="100%">
 														<Tooltip

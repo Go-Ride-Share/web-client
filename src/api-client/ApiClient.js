@@ -80,24 +80,30 @@ export async function savePost(savePostRequest) {
 	return result;
 }
 
-export async function getPosts(userId) {
+export async function getPosts(userId, limit, offset) {
 	if (!userId) {
 		return { error: 'User ID is required' };
 	}
 
-	const result = await makeAuthenticatedRequest(`/getPosts?userId=${userId}`, {
-		method: 'GET',
-	});
+	const result = await makeAuthenticatedRequest(
+		`/getPosts?userId=${userId}&limit=${limit}&offset=${offset}`,
+		{
+			method: 'GET',
+		}
+	);
 	return result;
 }
 
-export async function getAllPosts() {
-	const response = await fetch(`${API_AUTH_URL}/getAllPosts`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	});
+export async function getAllPosts(limit, offset) {
+	const response = await fetch(
+		`${API_AUTH_URL}/getAllPosts?limit=${limit}&offset=${offset}`,
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}
+	);
 
 	return handleResponse(response);
 }
@@ -128,7 +134,7 @@ export async function getAllConversations() {
 	const result = await makeAuthenticatedRequest('/GetAllConversations', {
 		method: 'GET',
 	});
-	return result; 
+	return result;
 }
 
 export async function pollConversation(conversationId, timeStamp) {
