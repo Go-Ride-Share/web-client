@@ -54,7 +54,7 @@ const Nav = () => {
 	};
 
 	const handleViewPosts = () => {
-		navigate('/posts');
+		navigate('/userPosts');
 	};
 
 	return (
@@ -82,7 +82,7 @@ const Nav = () => {
 				{isLoggedIn() && (
 					<Link
 						as={RouterLink}
-						to="/post"
+						to="/createPost"
 						fontSize="lg"
 						fontWeight="bold"
 						color={theme.colors.text}

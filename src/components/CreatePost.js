@@ -26,7 +26,7 @@ import { isLoggedIn } from './Utils.js';
 import 'react-day-picker/style.css';
 import 'reactjs-popup/dist/index.css';
 
-const Post = () => {
+const CreatePost = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [loggedIn] = useState(isLoggedIn());
@@ -359,4 +359,4 @@ const Post = () => {
 	);
 };
 
-export default Post;
+export default CreatePost;

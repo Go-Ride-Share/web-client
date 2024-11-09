@@ -6,13 +6,13 @@ import Nav from './Nav';
 import Login from './Login';
 import Signup from './Signup';
 import UserProfile from './UserProfile';
-import Post from './Post';
+import CreatePost from './CreatePost';
 import PostList from './PostList';
 import HomePage from './HomePage';
 import AllConversationsDrawer from './AllConversations';
 import { isLoggedIn } from './Utils.js';
 
-const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
+const PageWithNav = ({ login, signup, user, createPost, userPosts, homePage }) => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -31,9 +31,9 @@ const PageWithNav = ({ login, signup, user, post, posts, homePage }) => {
 					<Signup />
 				) : user ? (
 					<UserProfile />
-				) : post ? (
-					<Post />
-				) : posts ? (
+				) : createPost ? (
+					<CreatePost />
+				) : userPosts ? (
 					<PostList usersRides />
 				) : homePage ? (
 					<HomePage />
