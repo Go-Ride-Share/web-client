@@ -14,6 +14,7 @@ import {
 	Flex,
 } from '@chakra-ui/react';
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
+import { MdOutlineMessage } from 'react-icons/md';
 import { getPosts, getAllPosts } from '../api-client/ApiClient';
 import { Link } from 'react-router-dom';
 import { isLoggedIn } from './Utils.js';
@@ -148,7 +149,7 @@ const PostList = ({ usersRides }) => {
 										w="100%"
 										bg={theme.colors.background}
 										color={theme.colors.text}
-										position="relative" 
+										position="relative"
 									>
 										<HStack justify="space-between" w="100%">
 											<Box flex="1" mr={4}>
@@ -192,8 +193,11 @@ const PostList = ({ usersRides }) => {
 														<CustomButton
 															isDisabled={!loggedIn}
 															onClick={() => handleContactClick(post)}
+															size="sm"
 														>
-															Contact
+															<>
+																<Box as={MdOutlineMessage} mr="1" /> Contact
+															</>
 														</CustomButton>
 													</Tooltip>
 												</Box>
