@@ -12,6 +12,7 @@ import {
 	useDisclosure,
 	Tooltip,
 	Flex,
+	Image,
 } from '@chakra-ui/react';
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import { MdOutlineMessage } from 'react-icons/md';
@@ -20,6 +21,7 @@ import { Link } from 'react-router-dom';
 import { isLoggedIn } from './Utils.js';
 import CustomButton from './Button';
 import NewConversationDrawer from './NewConversationDrawer';
+import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
 const PostList = ({ usersRides }) => {
 	const theme = useTheme();
@@ -100,7 +102,13 @@ const PostList = ({ usersRides }) => {
 	};
 
 	return (
-		<Stack spacing={6} maxW="md" mx="auto" mt="4" fontFamily="CaviarDreams">
+		<Stack
+			spacing={6}
+			maxW="md"
+			mx="auto"
+			mt="4"
+			fontFamily="CaviarDreams"
+		>
 			<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams">
 				{usersRides ? 'Your Rides' : 'Available Rides'}
 			</Heading>
@@ -134,7 +142,7 @@ const PostList = ({ usersRides }) => {
 						<Text color="red.500">{error}</Text>
 					</Box>
 				) : (
-					<Flex direction="column" height="100%">
+					<Flex direction="column" height="100%" minH="auto">
 						<Stack spacing={4} flex="1">
 							{currentPosts.length === 0 ? (
 								<Text textAlign="center" color={theme.colors.text}>
@@ -150,6 +158,7 @@ const PostList = ({ usersRides }) => {
 										bg={theme.colors.background}
 										color={theme.colors.text}
 										position="relative"
+										minH="15vh"
 									>
 										<HStack justify="space-between" w="100%">
 											<Box flex="1" mr={4}>
@@ -183,24 +192,48 @@ const PostList = ({ usersRides }) => {
 													{post.seatsAvailable}
 												</Text>
 											</Box>
-											{!usersRides && (
-												<Box position="absolute" bottom="2" right="2">
-													<Tooltip
-														label={!loggedIn ? 'Login to contact' : ''}
-														shouldWrapChildren
-														isDisabled={loggedIn}
-													>
-														<CustomButton
-															isDisabled={!loggedIn}
-															onClick={() => handleContactClick(post)}
-															size="sm"
+
+											{!usersRides && post.user && (
+												<Flex
+													direction="column"
+													align="center"
+													justify="space-between"
+													h="100%"
+													minH="18vh"
+												>
+													<Box>
+														<Image
+															src={post.user.photo || DefaultPhoto}
+															alt="User photo"
+															boxSize="50px"
+															borderRadius="full"
+															mb="2"
+														/>
+														<Text
+															fontSize="sm"
+															fontWeight="bold"
+															textAlign="center"
 														>
-															<>
+															{post.user.name.split(' ')[0]}
+														</Text>
+													</Box>
+													<Box mt="auto" w="100%">
+														<Tooltip
+															label={!loggedIn ? 'Login to contact' : ''}
+															shouldWrapChildren
+															isDisabled={loggedIn}
+														>
+															<CustomButton
+																isDisabled={!loggedIn}
+																onClick={() => handleContactClick(post)}
+																size="sm"
+																w="100%"
+															>
 																<Box as={MdOutlineMessage} mr="1" /> Contact
-															</>
-														</CustomButton>
-													</Tooltip>
-												</Box>
+															</CustomButton>
+														</Tooltip>
+													</Box>
+												</Flex>
 											)}
 										</HStack>
 									</Card>
@@ -208,7 +241,7 @@ const PostList = ({ usersRides }) => {
 							)}
 						</Stack>
 						{posts.length > 0 && !loading && (
-							<HStack justify="center" spacing={2} mt={4}>
+							<HStack justify="center" spacing={2} mt="2vh">
 								<Button
 									size="sm"
 									onClick={handlePrevPage}
