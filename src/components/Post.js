@@ -11,8 +11,8 @@ import {
 	InputRightElement,
 	IconButton,
 	Flex,
-  Box,
-  Link
+	Box,
+	Link,
 } from '@chakra-ui/react';
 import CustomButton from './Button';
 import GoogleMapComponent from './Map';
@@ -29,7 +29,7 @@ import 'reactjs-popup/dist/index.css';
 const Post = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-  const [loggedIn] = useState(isLoggedIn());
+	const [loggedIn] = useState(isLoggedIn());
 	const [postName, setName] = useState('');
 	const [originLng, setStartLng] = useState(0);
 	const [originLat, setStartLat] = useState(0);
@@ -45,12 +45,10 @@ const Post = () => {
 	const [mapDisabled, setMapDisabled] = useState(true);
 	const [departureDate, setDate] = useState(null);
 	const [open, setOpen] = useState(false);
+	const [directions, setDirections] = useState(null);
 
 	const handleNameChange = (e) => setName(e.target.value);
-	const handleStartChange = (e) => setStart(e.target.value);
-	const handleEndChange = (e) => setEnd(e.target.value);
 	const handleDescChange = (e) => setDesc(e.target.value);
-
 	const handleDepartureChange = (e) => setDate(e.target.value);
 
 	let formattedDate = 'Select a date';
@@ -64,16 +62,6 @@ const Post = () => {
 		INACTIVE: '',
 	};
 
-	const handleSelectEndLocation = () => {
-		if (mapSelection !== mapUses.END) {
-			setMapDisabled(false);
-			setMapSelection(mapUses.END);
-		} else {
-			setMapDisabled(true);
-			setMapSelection(mapUses.INACTIVE);
-		}
-	};
-
 	const handleSelectStartLocation = () => {
 		if (mapSelection !== mapUses.START) {
 			setMapDisabled(false);
@@ -84,28 +72,67 @@ const Post = () => {
 		}
 	};
 
-	const useMap = (event) => {
-		if (mapSelection === mapUses.END) {
-			setEnd(
-				'Lat: ' +
-					event.latLng.lat().toFixed(2) +
-					', Long:' +
-					event.latLng.lng().toFixed(2)
-			);
-			setEndLat(event.latLng.lat().toFixed(2));
-			setEndLng(event.latLng.lng().toFixed(2));
-		}
-		if (mapSelection === mapUses.START) {
-			setStart(
-				'Lat: ' +
-					event.latLng.lat().toFixed(2) +
-					', Long:' +
-					event.latLng.lng().toFixed(2)
-			);
-			setStartLat(event.latLng.lat().toFixed(2));
-			setStartLng(event.latLng.lng().toFixed(2));
+	const handleSelectEndLocation = () => {
+		if (mapSelection !== mapUses.END) {
+			setMapDisabled(false);
+			setMapSelection(mapUses.END);
+		} else {
+			setMapDisabled(true);
+			setMapSelection(mapUses.INACTIVE);
 		}
 	};
+
+	const useMap = async (event) => {
+		const lat = event.latLng.lat();
+		const lng = event.latLng.lng();
+
+		const geocoder = new window.google.maps.Geocoder();
+		geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+			if (status === 'OK' && results[0]) {
+				const address = results[0].formatted_address;
+				if (mapSelection === mapUses.END) {
+					setEnd(address);
+					setEndLat(lat);
+					setEndLng(lng);
+				}
+				if (mapSelection === mapUses.START) {
+					setStart(address);
+					setStartLat(lat);
+					setStartLng(lng);
+				}
+			}
+		});
+	};
+
+	React.useEffect(() => {
+		if (startLocation && endLocation) {
+			const directionsService = new window.google.maps.DirectionsService();
+			directionsService.route(
+				{
+					origin: new window.google.maps.LatLng(originLat, originLng),
+					destination: new window.google.maps.LatLng(
+						destinationLat,
+						destinationLng
+					),
+					travelMode: window.google.maps.TravelMode.DRIVING,
+				},
+				(result, status) => {
+					if (status === 'OK') {
+						setDirections(result);
+					} else {
+						console.error('Directions request failed due to ' + status);
+					}
+				}
+			);
+		}
+	}, [
+		startLocation,
+		endLocation,
+		originLat,
+		originLng,
+		destinationLat,
+		destinationLng,
+	]);
 
 	const handlePriceChange = (e) => {
 		setPrice(e.target.value);
@@ -122,6 +149,8 @@ const Post = () => {
 			originLat: Number(originLat),
 			destinationLng: Number(destinationLng),
 			destinationLat: Number(destinationLat),
+			originName: String(startLocation),
+			destinationName: String(endLocation),
 			description: String(description),
 			departureDate: String(departureDate.toISOString()),
 			price: Number(price),
@@ -198,7 +227,6 @@ const Post = () => {
 										readOnly={true}
 										value={startLocation}
 										bg={theme.colors.background}
-										onChange={handleStartChange}
 										_placeholder={{ color: theme.colors.textLight }}
 									/>
 									<InputRightElement width="3rem">
@@ -217,7 +245,6 @@ const Post = () => {
 										placeholder="End Location"
 										value={endLocation}
 										readOnly={true}
-										onChange={handleEndChange}
 										bg={theme.colors.background}
 										_placeholder={{ color: theme.colors.textLight }}
 									/>
@@ -300,6 +327,7 @@ const Post = () => {
 								<GoogleMapComponent
 									mapDisabled={mapDisabled}
 									clicked={useMap}
+									directions={directions}
 								/>
 
 								<Stack direction="row" spacing={14}>
