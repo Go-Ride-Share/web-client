@@ -22,9 +22,15 @@ import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 const Nav = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const [userPhoto, setUserPhoto] = useState(
-		localStorage.getItem('user_photo')
-	);
+	const [userPhoto, setUserPhoto] = useState(DefaultPhoto);
+
+	useEffect(() => {
+		const storedPhoto = localStorage.getItem('user_photo');
+		const photoToUse =
+			storedPhoto && storedPhoto !== 'null' ? storedPhoto : DefaultPhoto;
+
+		setUserPhoto(photoToUse);
+	}, []);
 
 	const handleSignOut = () => {
 		localStorage.removeItem('logic_token');
@@ -42,18 +48,6 @@ const Nav = () => {
 			navigate('/');
 		}
 	};
-
-	useEffect(() => {
-		const updatePhoto = () => {
-			const storedPhoto = localStorage.getItem('user_photo');
-			setUserPhoto(storedPhoto || DefaultPhoto);
-		};
-		updatePhoto();
-		window.addEventListener('storage', updatePhoto);
-		return () => {
-			window.removeEventListener('storage', updatePhoto);
-		};
-	}, []);
 
 	const handleEditAccount = () => {
 		navigate('/user');
@@ -119,7 +113,7 @@ const Nav = () => {
 								aria-label="Options"
 								icon={
 									<Image
-										src={userPhoto || DefaultPhoto}
+										src={userPhoto}
 										boxSize="30px"
 										objectFit="cover"
 										borderRadius="full"
