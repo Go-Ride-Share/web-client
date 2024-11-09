@@ -101,14 +101,12 @@ const PostList = ({ usersRides }) => {
 		onOpen();
 	};
 
+	const getLocationName = (name, lat, lng) => {
+		return name && name.trim() !== '' ? name : `Lat: ${lat}, Lng: ${lng}`;
+	};
+
 	return (
-		<Stack
-			spacing={6}
-			maxW="md"
-			mx="auto"
-			mt="4"
-			fontFamily="CaviarDreams"
-		>
+		<Stack spacing={6} maxW="md" mx="auto" mt="4" fontFamily="CaviarDreams">
 			<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams">
 				{usersRides ? 'Your Rides' : 'Available Rides'}
 			</Heading>
@@ -167,11 +165,19 @@ const PostList = ({ usersRides }) => {
 												</Heading>
 												<Text>
 													<strong>Origin:</strong>{' '}
-													{`Lat: ${post.originLat}, Lng: ${post.originLng}`}
+													{getLocationName(
+														post.originName,
+														post.originLat,
+														post.originLng
+													)}
 												</Text>
 												<Text>
 													<strong>Destination:</strong>{' '}
-													{`Lat: ${post.destinationLat}, Lng: ${post.destinationLng}`}
+													{getLocationName(
+														post.destinationName,
+														post.destinationLat,
+														post.destinationLng
+													)}
 												</Text>
 												<Text>
 													<strong>Departure Date:</strong>{' '}
@@ -201,23 +207,23 @@ const PostList = ({ usersRides }) => {
 													h="100%"
 													minH="18vh"
 												>
-													{post.user &&(
-													<Box>
-														<Image
-															src={post.user.photo || DefaultPhoto}
-															alt="User photo"
-															boxSize="50px"
-															borderRadius="full"
-															mb="2"
-														/>
-														<Text
-															fontSize="sm"
-															fontWeight="bold"
-															textAlign="center"
-														>
-															{post.user.name.split(' ')[0]}
-														</Text>
-													</Box>
+													{post.user && (
+														<Box>
+															<Image
+																src={post.user.photo || DefaultPhoto}
+																alt="User photo"
+																boxSize="50px"
+																borderRadius="full"
+																mb="2"
+															/>
+															<Text
+																fontSize="sm"
+																fontWeight="bold"
+																textAlign="center"
+															>
+																{post.user.name.split(' ')[0]}
+															</Text>
+														</Box>
 													)}
 													<Box mt="auto" w="100%">
 														<Tooltip
