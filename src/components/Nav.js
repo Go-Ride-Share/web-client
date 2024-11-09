@@ -14,7 +14,7 @@ import {
 	MenuItem,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import { FiEye } from 'react-icons/fi';
+import { FiLogOut } from 'react-icons/fi';
 import { isLoggedIn } from './Utils.js';
 import logo from '../assets/images/LogoNotBlack.png';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
@@ -100,7 +100,7 @@ const Nav = () => {
 				{isLoggedIn() ? (
 					<>
 						<Button
-							onClick={handleSignOut}
+							onClick={handleViewPosts}
 							bg={theme.colors.secondary}
 							color={theme.colors.text}
 							_hover={{
@@ -111,7 +111,7 @@ const Nav = () => {
 							width="8rem"
 							boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
 						>
-							Sign Out
+							My Posts
 						</Button>
 						<Menu>
 							<MenuButton
@@ -160,10 +160,10 @@ const Nav = () => {
 										boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
 									}}
 									boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
-									icon={<FiEye />}
-									onClick={handleViewPosts}
+									icon={<FiLogOut />}
+									onClick={handleSignOut}
 								>
-									View Posts
+									Sign Out
 								</MenuItem>
 							</MenuList>
 						</Menu>
