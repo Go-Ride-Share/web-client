@@ -193,7 +193,7 @@ const PostList = ({ usersRides }) => {
 												</Text>
 											</Box>
 
-											{!usersRides && post.user && (
+											{!usersRides && (
 												<Flex
 													direction="column"
 													align="center"
@@ -201,6 +201,7 @@ const PostList = ({ usersRides }) => {
 													h="100%"
 													minH="18vh"
 												>
+													{post.user &&(
 													<Box>
 														<Image
 															src={post.user.photo || DefaultPhoto}
@@ -217,6 +218,7 @@ const PostList = ({ usersRides }) => {
 															{post.user.name.split(' ')[0]}
 														</Text>
 													</Box>
+													)}
 													<Box mt="auto" w="100%">
 														<Tooltip
 															label={!loggedIn ? 'Login to contact' : ''}
