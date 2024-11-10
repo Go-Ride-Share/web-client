@@ -24,7 +24,7 @@ const Post = () => {
 	const [post, setPost] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
-	const [directions, setDirections] = useState(null);
+	const [directions] = useState(null);
 	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
@@ -135,7 +135,6 @@ const Post = () => {
 						<Box width="80%" height="400px">
 							<GoogleMapComponent
 								mapDisabled={true}
-								directions={directions}
 								originLat={post.originLat}
 								originLng={post.originLng}
 								destinationLat={post.destinationLat}
