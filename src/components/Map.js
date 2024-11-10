@@ -17,11 +17,6 @@ const GoogleMapComponent = ({
 	const [directions, setDirections] = useState(null);
 	const [map, setMap] = useState(null);
 
-	const defaultCenter = {
-		lat: originLat || 49.8951,
-		lng: originLng || -97.1385,
-	};
-
 	useEffect(() => {
 		if (originLat && originLng && destinationLat && destinationLng) {
 			const directionsService = new window.google.maps.DirectionsService();
@@ -29,7 +24,10 @@ const GoogleMapComponent = ({
 			directionsService.route(
 				{
 					origin: new window.google.maps.LatLng(originLat, originLng),
-					destination: new window.google.maps.LatLng(destinationLat, destinationLng),
+					destination: new window.google.maps.LatLng(
+						destinationLat,
+						destinationLng
+					),
 					travelMode: window.google.maps.TravelMode.DRIVING,
 				},
 				(result, status) => {
@@ -38,7 +36,9 @@ const GoogleMapComponent = ({
 
 						const bounds = new window.google.maps.LatLngBounds();
 						bounds.extend(new window.google.maps.LatLng(originLat, originLng));
-						bounds.extend(new window.google.maps.LatLng(destinationLat, destinationLng));
+						bounds.extend(
+							new window.google.maps.LatLng(destinationLat, destinationLng)
+						);
 
 						if (map) {
 							map.fitBounds(bounds);
@@ -56,11 +56,18 @@ const GoogleMapComponent = ({
 	};
 
 	useEffect(() => {
+		const defaultCenter = {
+			lat: originLat || 49.8951,
+			lng: originLng || -97.1385,
+		};
+
 		if (map && !mapDisabled) {
 			if (originLat && originLng && destinationLat && destinationLng) {
 				const bounds = new window.google.maps.LatLngBounds();
 				bounds.extend(new window.google.maps.LatLng(originLat, originLng));
-				bounds.extend(new window.google.maps.LatLng(destinationLat, destinationLng));
+				bounds.extend(
+					new window.google.maps.LatLng(destinationLat, destinationLng)
+				);
 				map.fitBounds(bounds);
 			} else {
 				map.setCenter(defaultCenter);
@@ -70,12 +77,12 @@ const GoogleMapComponent = ({
 			map.setCenter(defaultCenter);
 			map.setZoom(10);
 		}
-	}, [map, mapDisabled, originLat, originLng, destinationLat, destinationLng, defaultCenter]);
+	}, [map, mapDisabled, originLat, originLng, destinationLat, destinationLng]);
 
 	return (
 		<GoogleMap
 			mapContainerStyle={containerStyle}
-			center={defaultCenter}
+			center={{ lat: originLat || 49.8951, lng: originLng || -97.1385 }}
 			onClick={clicked}
 			onLoad={onLoad}
 			options={{
@@ -86,7 +93,6 @@ const GoogleMapComponent = ({
 				gestureHandling: 'auto',
 			}}
 		>
-
 			{directions && <DirectionsRenderer directions={directions} />}
 		</GoogleMap>
 	);
