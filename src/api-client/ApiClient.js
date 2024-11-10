@@ -103,7 +103,7 @@ export async function getAllPosts() {
 }
 
 export async function getPost(postId) {
-	const response = await fetch(`${API_AUTH_URL}//api/posts/${postId}`, {
+	const response = await fetch(`${API_AUTH_URL}/posts/${postId}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
