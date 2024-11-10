@@ -70,7 +70,7 @@ const GoogleMapComponent = ({
 			map.setCenter(defaultCenter);
 			map.setZoom(10);
 		}
-	}, [map, mapDisabled, originLat, originLng, destinationLat, destinationLng]);
+	}, [map, mapDisabled, originLat, originLng, destinationLat, destinationLng, defaultCenter]);
 
 	return (
 		<GoogleMap
