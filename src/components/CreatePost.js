@@ -45,7 +45,6 @@ const CreatePost = () => {
 	const [mapDisabled, setMapDisabled] = useState(true);
 	const [departureDate, setDate] = useState(null);
 	const [open, setOpen] = useState(false);
-	const [directions, setDirections] = useState(null);
 
 	const handleNameChange = (e) => setName(e.target.value);
 	const handleDescChange = (e) => setDesc(e.target.value);
@@ -89,7 +88,13 @@ const CreatePost = () => {
 		const geocoder = new window.google.maps.Geocoder();
 		geocoder.geocode({ location: { lat, lng } }, (results, status) => {
 			if (status === 'OK' && results[0]) {
-				const address = results[0].formatted_address;
+				let address = results[0].formatted_address;
+
+				const addressParts = address.split(',');
+				if (addressParts.length > 1) {
+					address = `${addressParts[0]}, ${addressParts[1]}`;
+				}
+
 				if (mapSelection === mapUses.END) {
 					setEnd(address);
 					setEndLat(lat);
@@ -103,36 +108,6 @@ const CreatePost = () => {
 			}
 		});
 	};
-
-	React.useEffect(() => {
-		if (startLocation && endLocation) {
-			const directionsService = new window.google.maps.DirectionsService();
-			directionsService.route(
-				{
-					origin: new window.google.maps.LatLng(originLat, originLng),
-					destination: new window.google.maps.LatLng(
-						destinationLat,
-						destinationLng
-					),
-					travelMode: window.google.maps.TravelMode.DRIVING,
-				},
-				(result, status) => {
-					if (status === 'OK') {
-						setDirections(result);
-					} else {
-						console.error('Directions request failed due to ' + status);
-					}
-				}
-			);
-		}
-	}, [
-		startLocation,
-		endLocation,
-		originLat,
-		originLng,
-		destinationLat,
-		destinationLng,
-	]);
 
 	const handlePriceChange = (e) => {
 		setPrice(e.target.value);
@@ -162,7 +137,7 @@ const CreatePost = () => {
 			setPostError(result.error);
 		} else {
 			setPostError('');
-			navigate('/posts');
+			navigate('/userPosts');
 		}
 	};
 
@@ -324,11 +299,16 @@ const CreatePost = () => {
 								/>
 							</Stack>
 							<Stack spacing={4} width="lg" align="center">
-								<GoogleMapComponent
-									mapDisabled={mapDisabled}
-									clicked={useMap}
-									directions={directions}
-								/>
+								{
+									<GoogleMapComponent
+										clicked={useMap}
+										originLat={originLat}
+										originLng={originLng}
+										destinationLat={destinationLat}
+										destinationLng={destinationLng}
+										mapDisabled={mapDisabled}
+									/>
+								}
 
 								<Stack direction="row" spacing={14}>
 									<Flex align="center">

@@ -161,7 +161,7 @@ const PostList = ({ usersRides }) => {
 										<HStack justify="space-between" w="100%">
 											<Box flex="1" mr={4}>
 												<Heading as="h3" size="md" mb="2">
-													{post.name}
+													<Link to={`/post/${post.postId}`}>{post.name}</Link>
 												</Heading>
 												<Text>
 													<strong>Origin:</strong>{' '}
@@ -202,24 +202,25 @@ const PostList = ({ usersRides }) => {
 											{!usersRides && (
 												<Flex
 													direction="column"
-													align="center"
 													justify="space-between"
 													h="100%"
 													minH="18vh"
 												>
 													{post.user && (
-														<Box>
+														<Box textAlign="right" ml="auto">
 															<Image
 																src={post.user.photo || DefaultPhoto}
 																alt="User photo"
 																boxSize="50px"
 																borderRadius="full"
 																mb="2"
+																display="block" 
+																marginLeft="auto"
 															/>
 															<Text
 																fontSize="sm"
 																fontWeight="bold"
-																textAlign="center"
+																textAlign="right"
 															>
 																{post.user.name.split(' ')[0]}
 															</Text>

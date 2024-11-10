@@ -7,12 +7,21 @@ import Login from './Login';
 import Signup from './Signup';
 import UserProfile from './UserProfile';
 import CreatePost from './CreatePost';
+import Post from './Post';
 import PostList from './PostList';
 import HomePage from './HomePage';
 import AllConversationsDrawer from './AllConversations';
 import { isLoggedIn } from './Utils.js';
 
-const PageWithNav = ({ login, signup, user, createPost, userPosts, homePage }) => {
+const PageWithNav = ({
+	login,
+	signup,
+	user,
+	createPost,
+	userPosts,
+	homePage,
+	post,
+}) => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -33,6 +42,8 @@ const PageWithNav = ({ login, signup, user, createPost, userPosts, homePage }) =
 					<UserProfile />
 				) : createPost ? (
 					<CreatePost />
+				) : post ? (
+					<Post />
 				) : userPosts ? (
 					<PostList usersRides />
 				) : homePage ? (
@@ -41,7 +52,7 @@ const PageWithNav = ({ login, signup, user, createPost, userPosts, homePage }) =
 					<Outlet />
 				)}
 			</Box>
-			<AllConversationsDrawer /> 
+			<AllConversationsDrawer />
 		</Box>
 	);
 };
@@ -51,7 +62,8 @@ PageWithNav.propTypes = {
 	signup: PropTypes.bool,
 	user: PropTypes.bool,
 	post: PropTypes.bool,
-	posts: PropTypes.bool,
+	createPost: PropTypes.bool,
+	userPosts: PropTypes.bool,
 	homePage: PropTypes.bool,
 };
 
