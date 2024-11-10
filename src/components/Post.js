@@ -24,7 +24,6 @@ const Post = () => {
 	const [post, setPost] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
-	const [directions] = useState(null);
 	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
