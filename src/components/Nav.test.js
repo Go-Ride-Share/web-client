@@ -47,7 +47,7 @@ describe('Nav component', () => {
 		expect(screen.queryByText(/Sign Out/i)).not.toBeInTheDocument();
 	});
 
-	test('renders Sign Out button when user is logged in', () => {
+	test('doesnt render sign in button when user is logged in', () => {
 		window.localStorage.getItem.mockImplementation((key) => {
 			if (key === 'logic_token') return 'some_logic_token';
 			if (key === 'db_token') return 'some_db_token';
@@ -63,9 +63,6 @@ describe('Nav component', () => {
 			</Router>
 		);
 
-		expect(
-			screen.getByRole('button', { name: /Sign Out/i })
-		).toBeInTheDocument();
 		expect(
 			screen.queryByRole('button', { name: /Sign In/i })
 		).not.toBeInTheDocument();

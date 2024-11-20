@@ -102,6 +102,17 @@ export async function getAllPosts() {
 	return handleResponse(response);
 }
 
+export async function getPost(postId) {
+	const response = await fetch(`${API_AUTH_URL}/posts/${postId}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+
+	return handleResponse(response);
+}
+
 export async function createConversation(createConversationRequest) {
 	const result = await makeAuthenticatedRequest('/CreateConversation', {
 		method: 'POST',
