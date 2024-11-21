@@ -20,13 +20,24 @@ export async function createUser(createUserRequest) {
 	return handleResponse(response);
 }
 
-export async function login(loginRequest) {
+export async function passwordLogin(loginRequest) {
 	const response = await fetch(`${API_AUTH_URL}/VerifyLoginCredentials`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(loginRequest),
+	});
+	return handleResponse(response);
+}
+
+export async function googleLogin(code) {
+	const response = await fetch(`${API_AUTH_URL}/GoogleSignIn`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: code,
 	});
 	return handleResponse(response);
 }
