@@ -50,9 +50,9 @@ const CreatePost = () => {
 	const handleDescChange = (e) => setDesc(e.target.value);
 	const handleDepartureChange = (e) => setDate(e.target.value);
 
-	let formattedDate = 'Select a date';
+	let formattedDate = 'Departure Date';
 	if (departureDate) {
-		formattedDate = departureDate;
+		formattedDate = departureDate.toDateString();
 	}
 
 	const mapUses = {
@@ -326,7 +326,7 @@ const CreatePost = () => {
 										isDisabled={!isFormValid}
 										onClick={handlePost}
 									>
-										Save Post
+										Create Post
 									</CustomButton>
 								</Stack>
 								{postError && <Text color="red.500">{postError}</Text>}
