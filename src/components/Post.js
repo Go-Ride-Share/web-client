@@ -17,6 +17,7 @@ import CustomButton from './Button';
 import { MdOutlineMessage } from 'react-icons/md';
 import NewConversationDrawer from './NewConversationDrawer';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
+import { isLoggedIn } from './Utils.js';
 
 const Post = () => {
 	const { postId } = useParams();
@@ -45,7 +46,7 @@ const Post = () => {
 	};
 
 	const localUserId = localStorage.getItem('user_id');
-	const isContactButtonDisabled = post?.posterId === localUserId;
+	const isContactButtonDisabled = post?.posterId === localUserId || !isLoggedIn();
 
 	return (
 		<Stack
