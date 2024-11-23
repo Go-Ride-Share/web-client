@@ -63,7 +63,6 @@ const SearchRides = ({ setPosts }) => {
 				departureInputRef.current,
 				{ fields: ['geometry', 'formatted_address'] }
 			);
-
 			departureAutocomplete.addListener('place_changed', () => {
 				const place = departureAutocomplete.getPlace();
 				if (place.geometry) {
