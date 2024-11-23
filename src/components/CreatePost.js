@@ -228,6 +228,10 @@ const CreatePost = ({ edit }) => {
 			seatsAvailable: Number(seatsAvailable),
 		};
 
+		if (postId) {
+			userRequest['postId'] = postId
+		}
+
 		const result = await savePost(userRequest);
 		if (result.error) {
 			setPostError(result.error);
