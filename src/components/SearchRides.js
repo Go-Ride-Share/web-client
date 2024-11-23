@@ -151,7 +151,7 @@ const SearchRides = ({ setPosts }) => {
 				originLng: Number(departureLng),
 				destinationLat: Number(destinationLat),
 				destinationLng: Number(destinationLng),
-				departureDate: String(departureDate ? departureDate.toISOString() : ''),
+				departureDate: departureDate ? departureDate.toISOString() : null,
 				numSeats: String(numSeats) || null,
 				price: Number(price) || null,
 			};

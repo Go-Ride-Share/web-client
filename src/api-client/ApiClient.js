@@ -102,12 +102,13 @@ export async function getAllPosts() {
 	return handleResponse(response);
 }
 
-export async function searchPosts() {
+export async function searchPosts(searchPostRequest) {
 	const response = await fetch(`${API_AUTH_URL}/posts/search`, {
-		method: 'GET',
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
+		body: JSON.stringify(searchPostRequest),
 	});
 
 	return handleResponse(response);
