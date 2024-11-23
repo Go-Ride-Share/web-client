@@ -37,6 +37,11 @@ const SearchRides = ({ setPosts }) => {
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+	const [departureLocationError, setDepartureLocationError] = useState('');
+	const [destinationLocationError, setDestinationLocationError] = useState('');
+
+	const departureInputRef = useRef(null);
+	const destinationInputRef = useRef(null);
 
 	const mapUses = {
 		DEPARTURE: 'Departure',
@@ -52,9 +57,6 @@ const SearchRides = ({ setPosts }) => {
 		return address;
 	};
 
-	const departureInputRef = useRef(null);
-	const destinationInputRef = useRef(null);
-
 	useEffect(() => {
 		if (window.google && window.google.maps && window.google.maps.places) {
 			const departureAutocomplete = new window.google.maps.places.Autocomplete(
@@ -67,13 +69,14 @@ const SearchRides = ({ setPosts }) => {
 				if (place.geometry) {
 					setDepartureLat(place.geometry.location.lat());
 					setDepartureLng(place.geometry.location.lng());
-
 					const truncatedAddress = truncateAddress(place.formatted_address);
 					setDepartureLocation(truncatedAddress);
+					setDepartureLocationError(''); // Clear error if a valid location is selected
 				} else {
 					setDepartureLocation('');
 					setDepartureLat(0);
 					setDepartureLng(0);
+					setDepartureLocationError('Invalid departure location'); // Set error if no valid location
 				}
 			});
 
@@ -88,9 +91,9 @@ const SearchRides = ({ setPosts }) => {
 				if (place.geometry) {
 					setDestinationLat(place.geometry.location.lat());
 					setDestinationLng(place.geometry.location.lng());
-
 					const truncatedAddress = truncateAddress(place.formatted_address);
 					setDestinationLocation(truncatedAddress);
+					setDestinationLocationError('');
 				} else {
 					setDestinationLocation('');
 					setDestinationLat(0);
@@ -99,6 +102,27 @@ const SearchRides = ({ setPosts }) => {
 			});
 		}
 	}, []);
+
+	useEffect(() => {
+		if (departureLat === 0 && departureLng === 0 && departureLocation) {
+			setDepartureLocationError('Invalid departure location');
+		} else {
+			setDepartureLocationError('');
+		}
+
+		if (destinationLat === 0 && destinationLng === 0 && destinationLocation) {
+			setDestinationLocationError('Invalid destination location');
+		} else {
+			setDestinationLocationError('');
+		}
+	}, [
+		departureLat,
+		departureLng,
+		departureLocation,
+		destinationLat,
+		destinationLng,
+		destinationLocation,
+	]);
 
 	const handleMapSelect = (type) => {
 		if (mapSelection !== type) {
@@ -128,10 +152,12 @@ const SearchRides = ({ setPosts }) => {
 					setDepartureLocation(address);
 					setDepartureLat(lat);
 					setDepartureLng(lng);
+					setDepartureLocationError(''); // Clear error when selected via map
 				} else if (mapSelection === mapUses.DESTINATION) {
 					setDestinationLocation(address);
 					setDestinationLat(lat);
 					setDestinationLng(lng);
+					setDestinationLocationError('');
 				}
 			}
 		});
@@ -172,6 +198,18 @@ const SearchRides = ({ setPosts }) => {
 		}
 	};
 
+	const handleDepartureBlur = () => {
+		if (departureLat === 0 && departureLng === 0) {
+			setDepartureLocationError('Departure location is invalid');
+		}
+	};
+
+	const handleDestinationBlur = () => {
+		if (destinationLat === 0 && destinationLng === 0) {
+			setDestinationLocationError('Departure location is invalid');
+		}
+	};
+
 	return (
 		<Box
 			bg={theme.colors.accent}
@@ -200,6 +238,7 @@ const SearchRides = ({ setPosts }) => {
 						placeholder="Start Location"
 						value={departureLocation}
 						onChange={(e) => setDepartureLocation(e.target.value)}
+						onBlur={handleDepartureBlur}
 						bg={theme.colors.background}
 						_placeholder={{ color: theme.colors.textLight }}
 					/>
@@ -215,6 +254,9 @@ const SearchRides = ({ setPosts }) => {
 						/>
 					</InputRightElement>
 				</InputGroup>
+				{departureLocationError && (
+					<Text color="red.500">{departureLocationError}</Text>
+				)}
 
 				<InputGroup>
 					<Input
@@ -222,6 +264,7 @@ const SearchRides = ({ setPosts }) => {
 						placeholder="End Location"
 						value={destinationLocation}
 						onChange={(e) => setDestinationLocation(e.target.value)}
+						onBlur={handleDestinationBlur}
 						bg={theme.colors.background}
 						_placeholder={{ color: theme.colors.textLight }}
 					/>
@@ -237,6 +280,9 @@ const SearchRides = ({ setPosts }) => {
 						/>
 					</InputRightElement>
 				</InputGroup>
+				{destinationLocationError && (
+					<Text color="red.500">{destinationLocationError}</Text>
+				)}
 
 				<InputGroup>
 					<Input
@@ -257,7 +303,6 @@ const SearchRides = ({ setPosts }) => {
 					</InputRightElement>
 				</InputGroup>
 
-				{/* Price */}
 				<HStack>
 					<Text>Price($):</Text>
 					<Input
@@ -293,7 +338,12 @@ const SearchRides = ({ setPosts }) => {
 						boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
 						size="md"
 						width="100%"
-						isDisabled={loading || !(departureLocation && destinationLocation)}
+						isDisabled={
+							loading ||
+							!(departureLocation && destinationLocation) ||
+							departureLat === 0 ||
+							destinationLat === 0
+						}
 						isLoading={loading}
 						onClick={handleSearch}
 					>
