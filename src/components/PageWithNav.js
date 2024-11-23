@@ -21,6 +21,7 @@ const PageWithNav = ({
 	userPosts,
 	homePage,
 	post,
+	editPost
 }) => {
 	const navigate = useNavigate();
 
@@ -46,6 +47,8 @@ const PageWithNav = ({
 					<Post />
 				) : userPosts ? (
 					<PostList usersRides />
+				) : editPost ? (
+					<CreatePost edit/>
 				) : homePage ? (
 					<HomePage />
 				) : (
@@ -63,6 +66,7 @@ PageWithNav.propTypes = {
 	user: PropTypes.bool,
 	post: PropTypes.bool,
 	createPost: PropTypes.bool,
+	editPost: PropTypes.bool,
 	userPosts: PropTypes.bool,
 	homePage: PropTypes.bool,
 };

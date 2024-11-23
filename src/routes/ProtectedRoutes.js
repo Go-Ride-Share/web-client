@@ -12,6 +12,7 @@ const ProtectedRoutes = () => {
       <Route path="/createPost" element={<PageWithNav createPost />} />
 			<Route path="/userPosts" element={<PageWithNav userPosts />} />
 			<Route path="/post/:postId" element={<PageWithNav post />} />
+			<Route path="/editPost/:postId" element={<PageWithNav editPost />} />
 		</Routes>
 	);
 };

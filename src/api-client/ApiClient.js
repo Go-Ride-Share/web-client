@@ -115,7 +115,7 @@ export async function searchPosts(searchPostRequest) {
 }
 
 export async function getPost(postId) {
-	const response = await fetch(`${API_AUTH_URL}/posts/${postId}`, {
+	const response = await fetch(`${API_AUTH_URL}/posts?postId=${postId}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',

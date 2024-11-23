@@ -36,36 +36,36 @@ const PostList = ({ usersRides, postsProp }) => {
 
 	useEffect(() => {
 		const userId = localStorage.getItem('user_id');
-	
-		const sortPostsByDate = (posts) => 
+
+		const sortPostsByDate = (posts) =>
 			posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-	
+
 		if (postsProp) {
 			let filteredPosts = postsProp;
-	
+
 			if (loggedIn) {
 				filteredPosts = postsProp.filter((post) => post.posterId !== userId);
 			}
-	
+
 			setPosts(filteredPosts);
 			setLoading(false);
 		} else if (loggedIn || !usersRides) {
 			const fetchPosts = async () => {
 				setLoading(true);
-	
+
 				try {
 					let response = null;
-	
+
 					if (usersRides) {
 						response = await getPosts(userId);
 					} else {
 						response = await getAllPosts();
-	
+
 						if (loggedIn && Array.isArray(response)) {
 							response = response.filter((post) => post.posterId !== userId);
 						}
 					}
-	
+
 					if (response?.error) {
 						setError(response.error);
 					} else if (Array.isArray(response)) {
@@ -79,13 +79,12 @@ const PostList = ({ usersRides, postsProp }) => {
 					setLoading(false);
 				}
 			};
-	
+
 			fetchPosts();
 		} else {
 			setLoading(false);
 		}
 	}, [loggedIn, usersRides, postsProp]);
-	
 
 	const indexOfLastPost = currentPage * postsPerPage;
 	const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -254,6 +253,18 @@ const PostList = ({ usersRides, postsProp }) => {
 															</CustomButton>
 														</Tooltip>
 													</Box>
+												</Flex>
+											)}
+											{usersRides && (
+												<Flex position="absolute" bottom="2" right="2">
+													<Button
+														as={Link}
+														to={`/editPost/${post.postId}`}
+														size="sm"
+														colorScheme="blue"
+													>
+														Edit Post
+													</Button>
 												</Flex>
 											)}
 										</HStack>
