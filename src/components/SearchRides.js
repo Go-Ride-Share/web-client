@@ -84,27 +84,36 @@ const SearchRides = ({ setPosts }) => {
 	const handleSearch = async () => {
 		setLoading(true);
 		setError('');
+		let response = null;
+
 		try {
 			const searchParams = {
-				departureLat,
-				departureLng,
-				destinationLat,
-				destinationLng,
-				departureDate: departureDate ? departureDate.toISOString() : null,
-				numSeats: numSeats || null,
-				price: price || null,
+				originLat: Number(departureLat),
+				originLng: Number(departureLng),
+				destinationLat: Number(destinationLat),
+				destinationLng: Number(destinationLng),
+				departureDate: String(departureDate ? departureDate.toISOString() : ''),
+				numSeats: String(numSeats) || null,
+				price: Number(price) || null,
 			};
 
-			const response = await searchPosts(searchParams);
-			if (response.error) {
+			response = await searchPosts(searchParams);
+
+			if (response?.error) {
 				setError(response.error);
+			} else if (Array.isArray(response)) {
+				const sortedPosts = response.sort(
+					(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+				);
+				setPosts(sortedPosts);
 			} else {
-				setPosts(response.data);
+				setError('Unexpected response format');
 			}
-		} catch (err) {
-			setError('Failed to search posts. Please try again.');
+		} catch (error) {
+			setError('An error occurred while searching posts. Please try again.');
+		} finally {
+			setLoading(false);
 		}
-		setLoading(false);
 	};
 
 	return (
