@@ -11,6 +11,7 @@ function App() {
 		<ChakraProvider theme={theme}>
 			<RouterProvider>
 				<LoadScript
+					libraries={['places']}
 					googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
 				>
 					<Router />

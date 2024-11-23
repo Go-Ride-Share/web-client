@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
 	InputGroup,
 	Input,
@@ -43,6 +43,62 @@ const SearchRides = ({ setPosts }) => {
 		DESTINATION: 'Destination',
 		INACTIVE: '',
 	};
+
+	const truncateAddress = (address) => {
+		const addressParts = address.split(',');
+		if (addressParts.length > 1) {
+			return `${addressParts[0]}, ${addressParts[1]}`;
+		}
+		return address;
+	};
+
+	const departureInputRef = useRef(null);
+	const destinationInputRef = useRef(null);
+
+	useEffect(() => {
+		if (window.google && window.google.maps && window.google.maps.places) {
+			const departureAutocomplete = new window.google.maps.places.Autocomplete(
+				departureInputRef.current,
+				{ fields: ['geometry', 'formatted_address'] }
+			);
+
+			departureAutocomplete.addListener('place_changed', () => {
+				const place = departureAutocomplete.getPlace();
+				if (place.geometry) {
+					setDepartureLat(place.geometry.location.lat());
+					setDepartureLng(place.geometry.location.lng());
+
+					const truncatedAddress = truncateAddress(place.formatted_address);
+					setDepartureLocation(truncatedAddress);
+				} else {
+					setDepartureLocation('');
+					setDepartureLat(0);
+					setDepartureLng(0);
+				}
+			});
+
+			const destinationAutocomplete =
+				new window.google.maps.places.Autocomplete(
+					destinationInputRef.current,
+					{ fields: ['geometry', 'formatted_address'] }
+				);
+
+			destinationAutocomplete.addListener('place_changed', () => {
+				const place = destinationAutocomplete.getPlace();
+				if (place.geometry) {
+					setDestinationLat(place.geometry.location.lat());
+					setDestinationLng(place.geometry.location.lng());
+
+					const truncatedAddress = truncateAddress(place.formatted_address);
+					setDestinationLocation(truncatedAddress);
+				} else {
+					setDestinationLocation('');
+					setDestinationLat(0);
+					setDestinationLng(0);
+				}
+			});
+		}
+	}, []);
 
 	const handleMapSelect = (type) => {
 		if (mapSelection !== type) {
@@ -140,9 +196,10 @@ const SearchRides = ({ setPosts }) => {
 			<SimpleGrid columns={2} spacing={4}>
 				<InputGroup>
 					<Input
+						ref={departureInputRef}
 						placeholder="Start Location"
-						readOnly
 						value={departureLocation}
+						onChange={(e) => setDepartureLocation(e.target.value)}
 						bg={theme.colors.background}
 						_placeholder={{ color: theme.colors.textLight }}
 					/>
@@ -161,9 +218,10 @@ const SearchRides = ({ setPosts }) => {
 
 				<InputGroup>
 					<Input
+						ref={destinationInputRef}
 						placeholder="End Location"
-						readOnly
 						value={destinationLocation}
+						onChange={(e) => setDestinationLocation(e.target.value)}
 						bg={theme.colors.background}
 						_placeholder={{ color: theme.colors.textLight }}
 					/>
