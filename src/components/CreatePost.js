@@ -14,6 +14,7 @@ import {
 	Box,
 	Link,
 } from '@chakra-ui/react';
+import { useParams } from 'react-router-dom';
 import CustomButton from './Button';
 import GoogleMapComponent from './Map';
 import Popup from 'reactjs-popup';
@@ -26,7 +27,8 @@ import { isLoggedIn } from './Utils.js';
 import 'react-day-picker/style.css';
 import 'reactjs-popup/dist/index.css';
 
-const CreatePost = () => {
+const CreatePost = (edit) => {
+	const { postId } = useParams();
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const [loggedIn] = useState(isLoggedIn());
@@ -47,6 +49,7 @@ const CreatePost = () => {
 	const [open, setOpen] = useState(false);
 	const [departureLocationError, setDepartureLocationError] = useState('');
 	const [destinationLocationError, setDestinationLocationError] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	const departureInputRef = useRef(null);
 	const destinationInputRef = useRef(null);
@@ -156,13 +159,13 @@ const CreatePost = () => {
 					setEnd(address);
 					setEndLat(lat);
 					setEndLng(lng);
-					setDepartureLocationError('');
+					setDestinationLocationError('');
 				}
 				if (mapSelection === mapUses.START) {
 					setStart(address);
 					setStartLat(lat);
 					setStartLng(lng);
-					setDestinationLocationError('');
+					setDepartureLocationError('');
 				}
 			}
 		});
@@ -177,6 +180,7 @@ const CreatePost = () => {
 	};
 
 	const handlePost = async () => {
+		setLoading(true);
 		const userRequest = {
 			name: String(postName),
 			originLng: Number(originLng),
@@ -198,6 +202,7 @@ const CreatePost = () => {
 			setPostError('');
 			navigate('/userPosts');
 		}
+		setLoading(false);
 	};
 
 	const handleDepartureBlur = () => {
@@ -416,10 +421,10 @@ const CreatePost = () => {
 
 									<CustomButton
 										size="md"
-										isDisabled={!isFormValid}
+										isDisabled={!isFormValid || loading}
 										onClick={handlePost}
 									>
-										Create Post
+										{loading ? 'Creating Post' : 'Create Post'}
 									</CustomButton>
 								</Stack>
 								{postError && <Text color="red.500">{postError}</Text>}
