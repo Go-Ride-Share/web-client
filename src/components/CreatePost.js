@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
 	Stack,
 	Input,
@@ -45,6 +45,11 @@ const CreatePost = () => {
 	const [mapDisabled, setMapDisabled] = useState(true);
 	const [departureDate, setDate] = useState(null);
 	const [open, setOpen] = useState(false);
+	const [departureLocationError, setDepartureLocationError] = useState('');
+	const [destinationLocationError, setDestinationLocationError] = useState('');
+
+	const departureInputRef = useRef(null);
+	const destinationInputRef = useRef(null);
 
 	const handleNameChange = (e) => setName(e.target.value);
 	const handleDescChange = (e) => setDesc(e.target.value);
@@ -81,6 +86,58 @@ const CreatePost = () => {
 		}
 	};
 
+	const truncateAddress = (address) => {
+		const addressParts = address.split(',');
+		if (addressParts.length > 1) {
+			return `${addressParts[0]}, ${addressParts[1]}`;
+		}
+		return address;
+	};
+
+	useEffect(() => {
+		if (window.google && window.google.maps && window.google.maps.places) {
+			const departureAutocomplete = new window.google.maps.places.Autocomplete(
+				departureInputRef.current,
+				{ fields: ['geometry', 'formatted_address'] }
+			);
+			departureAutocomplete.addListener('place_changed', () => {
+				const place = departureAutocomplete.getPlace();
+				if (place.geometry) {
+					setStartLat(place.geometry.location.lat());
+					setStartLng(place.geometry.location.lng());
+					const truncatedAddress = truncateAddress(place.formatted_address);
+					setStart(truncatedAddress);
+					setDepartureLocationError('');
+				} else {
+					setStart('');
+					setStartLat(0);
+					setStartLng(0);
+				}
+			});
+
+			const destinationAutocomplete =
+				new window.google.maps.places.Autocomplete(
+					destinationInputRef.current,
+					{ fields: ['geometry', 'formatted_address'] }
+				);
+
+			destinationAutocomplete.addListener('place_changed', () => {
+				const place = destinationAutocomplete.getPlace();
+				if (place.geometry) {
+					setEndLat(place.geometry.location.lat());
+					setEndLng(place.geometry.location.lng());
+					const truncatedAddress = truncateAddress(place.formatted_address);
+					setEnd(truncatedAddress);
+					setDestinationLocationError('');
+				} else {
+					setEnd('');
+					setEndLat(0);
+					setEndLng(0);
+				}
+			});
+		}
+	}, []);
+
 	const useMap = async (event) => {
 		const lat = event.latLng.lat();
 		const lng = event.latLng.lng();
@@ -99,11 +156,13 @@ const CreatePost = () => {
 					setEnd(address);
 					setEndLat(lat);
 					setEndLng(lng);
+					setDepartureLocationError('');
 				}
 				if (mapSelection === mapUses.START) {
 					setStart(address);
 					setStartLat(lat);
 					setStartLng(lng);
+					setDestinationLocationError('');
 				}
 			}
 		});
@@ -138,6 +197,18 @@ const CreatePost = () => {
 		} else {
 			setPostError('');
 			navigate('/userPosts');
+		}
+	};
+
+	const handleDepartureBlur = () => {
+		if (originLat === 0 && originLng === 0) {
+			setDepartureLocationError('Please select valid location');
+		}
+	};
+
+	const handleDestinationBlur = () => {
+		if (destinationLng === 0 && destinationLat === 0) {
+			setDestinationLocationError('Please select valid location');
 		}
 	};
 
@@ -198,9 +269,15 @@ const CreatePost = () => {
 
 								<InputGroup>
 									<Input
+										ref={departureInputRef}
 										placeholder="Start Location"
-										readOnly={true}
 										value={startLocation}
+										onChange={(e) => {
+											setStart(e.target.value);
+											setStartLat(0);
+											setStartLng(0);
+										}}
+										onBlur={handleDepartureBlur}
 										bg={theme.colors.background}
 										_placeholder={{ color: theme.colors.textLight }}
 									/>
@@ -214,12 +291,23 @@ const CreatePost = () => {
 										/>
 									</InputRightElement>
 								</InputGroup>
+								{departureLocationError && (
+									<Text color="red.500" fontSize="sm" mt={1}>
+										{departureLocationError}
+									</Text>
+								)}
 
 								<InputGroup>
 									<Input
+										ref={destinationInputRef}
 										placeholder="End Location"
 										value={endLocation}
-										readOnly={true}
+										onChange={(e) => {
+											setEnd(e.target.value);
+											setEndLat(0);
+											setEndLng(0);
+										}}
+										onBlur={handleDestinationBlur}
 										bg={theme.colors.background}
 										_placeholder={{ color: theme.colors.textLight }}
 									/>
@@ -233,6 +321,11 @@ const CreatePost = () => {
 										/>
 									</InputRightElement>
 								</InputGroup>
+								{destinationLocationError && (
+									<Text color="red.500" fontSize="sm" mt={1}>
+										{destinationLocationError}
+									</Text>
+								)}
 
 								<InputGroup>
 									<Input
