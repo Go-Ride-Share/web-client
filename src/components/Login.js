@@ -27,6 +27,8 @@ const Login = () => {
 	const handleEmailChange = (e) => setEmail(e.target.value);
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 
+	const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
 	const handlePasswordLogin = async () => {
 		setIsLoading(true);
 		setError('');
@@ -57,9 +59,7 @@ const Login = () => {
 		}
 	};
 
-const handleSuccessfullGoogleSignIn = async (googleResponse) => {
-	console.log(googleResponse)
-	
+const handleSuccessfullGoogleSignIn = async (googleResponse) => {	
 	setIsLoading(true);
 	setError('');
 
@@ -161,7 +161,7 @@ const handleSuccessfullGoogleSignIn = async (googleResponse) => {
 							'Login'
 						)}
 					</CustomButton>
-					<GoogleOAuthProvider clientId="746390946552-sei32t8s8phdk9vo1kp9na6hrt2lc9oj.apps.googleusercontent.com">
+					<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 						<GoogleSignIn />
     				</GoogleOAuthProvider>
 					<Text textAlign="left">
