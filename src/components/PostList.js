@@ -23,7 +23,7 @@ import CustomButton from './Button';
 import NewConversationDrawer from './NewConversationDrawer';
 import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
-const PostList = ({ usersRides }) => {
+const PostList = ({ usersRides, postsProp }) => {
 	const theme = useTheme();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [posts, setPosts] = useState([]);
@@ -35,30 +35,41 @@ const PostList = ({ usersRides }) => {
 	const postsPerPage = 3;
 
 	useEffect(() => {
-		if (loggedIn || !usersRides) {
-			const userId = localStorage.getItem('user_id');
+		const userId = localStorage.getItem('user_id');
+	
+		const sortPostsByDate = (posts) => 
+			posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+	
+		if (postsProp) {
+			let filteredPosts = postsProp;
+	
+			if (loggedIn) {
+				filteredPosts = postsProp.filter((post) => post.posterId !== userId);
+			}
+	
+			setPosts(filteredPosts);
+			setLoading(false);
+		} else if (loggedIn || !usersRides) {
 			const fetchPosts = async () => {
 				setLoading(true);
-				let response = null;
-
+	
 				try {
+					let response = null;
+	
 					if (usersRides) {
 						response = await getPosts(userId);
 					} else {
 						response = await getAllPosts();
-
+	
 						if (loggedIn && Array.isArray(response)) {
 							response = response.filter((post) => post.posterId !== userId);
 						}
 					}
-
+	
 					if (response?.error) {
 						setError(response.error);
 					} else if (Array.isArray(response)) {
-						const sortedPosts = response.sort(
-							(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-						);
-						setPosts(sortedPosts);
+						setPosts(sortPostsByDate(response));
 					} else {
 						setError('Unexpected response format');
 					}
@@ -68,12 +79,13 @@ const PostList = ({ usersRides }) => {
 					setLoading(false);
 				}
 			};
-
+	
 			fetchPosts();
 		} else {
 			setLoading(false);
 		}
-	}, [loggedIn, usersRides]);
+	}, [loggedIn, usersRides, postsProp]);
+	
 
 	const indexOfLastPost = currentPage * postsPerPage;
 	const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -214,7 +226,7 @@ const PostList = ({ usersRides }) => {
 																boxSize="50px"
 																borderRadius="full"
 																mb="2"
-																display="block" 
+																display="block"
 																marginLeft="auto"
 															/>
 															<Text
