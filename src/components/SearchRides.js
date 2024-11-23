@@ -71,12 +71,11 @@ const SearchRides = ({ setPosts }) => {
 					setDepartureLng(place.geometry.location.lng());
 					const truncatedAddress = truncateAddress(place.formatted_address);
 					setDepartureLocation(truncatedAddress);
-					setDepartureLocationError(''); // Clear error if a valid location is selected
+					setDepartureLocationError('');
 				} else {
 					setDepartureLocation('');
 					setDepartureLat(0);
 					setDepartureLng(0);
-					setDepartureLocationError('Invalid departure location'); // Set error if no valid location
 				}
 			});
 
@@ -102,27 +101,6 @@ const SearchRides = ({ setPosts }) => {
 			});
 		}
 	}, []);
-
-	useEffect(() => {
-		if (departureLat === 0 && departureLng === 0 && departureLocation) {
-			setDepartureLocationError('Invalid departure location');
-		} else {
-			setDepartureLocationError('');
-		}
-
-		if (destinationLat === 0 && destinationLng === 0 && destinationLocation) {
-			setDestinationLocationError('Invalid destination location');
-		} else {
-			setDestinationLocationError('');
-		}
-	}, [
-		departureLat,
-		departureLng,
-		departureLocation,
-		destinationLat,
-		destinationLng,
-		destinationLocation,
-	]);
 
 	const handleMapSelect = (type) => {
 		if (mapSelection !== type) {
@@ -152,7 +130,7 @@ const SearchRides = ({ setPosts }) => {
 					setDepartureLocation(address);
 					setDepartureLat(lat);
 					setDepartureLng(lng);
-					setDepartureLocationError(''); // Clear error when selected via map
+					setDepartureLocationError('');
 				} else if (mapSelection === mapUses.DESTINATION) {
 					setDestinationLocation(address);
 					setDestinationLat(lat);
@@ -200,13 +178,13 @@ const SearchRides = ({ setPosts }) => {
 
 	const handleDepartureBlur = () => {
 		if (departureLat === 0 && departureLng === 0) {
-			setDepartureLocationError('Departure location is invalid');
+			setDepartureLocationError('Please select valid location');
 		}
 	};
 
 	const handleDestinationBlur = () => {
 		if (destinationLat === 0 && destinationLng === 0) {
-			setDestinationLocationError('Departure location is invalid');
+			setDestinationLocationError('Please select valid location');
 		}
 	};
 
@@ -232,98 +210,119 @@ const SearchRides = ({ setPosts }) => {
 			</Box>
 
 			<SimpleGrid columns={2} spacing={4}>
-				<InputGroup>
-					<Input
-						ref={departureInputRef}
-						placeholder="Start Location"
-						value={departureLocation}
-						onChange={(e) => setDepartureLocation(e.target.value)}
-						onBlur={handleDepartureBlur}
-						bg={theme.colors.background}
-						_placeholder={{ color: theme.colors.textLight }}
-					/>
-					<InputRightElement>
-						<IconButton
-							size="sm"
-							icon={<FaMapMarkerAlt />}
-							variant="link"
-							color={
-								mapSelection === mapUses.DEPARTURE ? 'red.500' : 'gray.500'
-							}
-							onClick={() => handleMapSelect(mapUses.DEPARTURE)}
+				<VStack align="stretch">
+					<InputGroup>
+						<Input
+							ref={departureInputRef}
+							placeholder="Start Location"
+							value={departureLocation}
+							onChange={(e) => {
+								setDepartureLocation(e.target.value);
+								setDepartureLat(0); 
+								setDepartureLng(0); 
+							}}
+							onBlur={handleDepartureBlur}
+							bg={theme.colors.background}
+							_placeholder={{ color: theme.colors.textLight }}
 						/>
-					</InputRightElement>
-				</InputGroup>
-				{departureLocationError && (
-					<Text color="red.500">{departureLocationError}</Text>
-				)}
+						<InputRightElement>
+							<IconButton
+								size="sm"
+								icon={<FaMapMarkerAlt />}
+								variant="link"
+								color={
+									mapSelection === mapUses.DEPARTURE ? 'red.500' : 'gray.500'
+								}
+								onClick={() => handleMapSelect(mapUses.DEPARTURE)}
+							/>
+						</InputRightElement>
+					</InputGroup>
+					{departureLocationError && (
+						<Text color="red.500" fontSize="sm" mt={1}>
+							{departureLocationError}
+						</Text>
+					)}
+				</VStack>
 
-				<InputGroup>
-					<Input
-						ref={destinationInputRef}
-						placeholder="End Location"
-						value={destinationLocation}
-						onChange={(e) => setDestinationLocation(e.target.value)}
-						onBlur={handleDestinationBlur}
-						bg={theme.colors.background}
-						_placeholder={{ color: theme.colors.textLight }}
-					/>
-					<InputRightElement>
-						<IconButton
-							size="sm"
-							icon={<FaMapMarkerAlt />}
-							variant="link"
-							color={
-								mapSelection === mapUses.DESTINATION ? 'red.500' : 'gray.500'
-							}
-							onClick={() => handleMapSelect(mapUses.DESTINATION)}
+				<VStack align="stretch">
+					<InputGroup>
+						<Input
+							ref={destinationInputRef}
+							placeholder="End Location"
+							value={destinationLocation}
+							onChange={(e) => {
+								setDestinationLocation(e.target.value);
+								setDestinationLat(0);
+								setDestinationLng(0);
+							}}
+							onBlur={handleDestinationBlur}
+							bg={theme.colors.background}
+							_placeholder={{ color: theme.colors.textLight }}
 						/>
-					</InputRightElement>
-				</InputGroup>
-				{destinationLocationError && (
-					<Text color="red.500">{destinationLocationError}</Text>
-				)}
+						<InputRightElement>
+							<IconButton
+								size="sm"
+								icon={<FaMapMarkerAlt />}
+								variant="link"
+								color={
+									mapSelection === mapUses.DESTINATION ? 'red.500' : 'gray.500'
+								}
+								onClick={() => handleMapSelect(mapUses.DESTINATION)}
+							/>
+						</InputRightElement>
+					</InputGroup>
+					{destinationLocationError && (
+						<Text color="red.500" fontSize="sm" mt={1}>
+							{destinationLocationError}
+						</Text>
+					)}
+				</VStack>
 
-				<InputGroup>
-					<Input
-						placeholder="Select Departure Date"
-						readOnly
-						value={departureDate ? departureDate.toDateString() : ''}
-						bg={theme.colors.background}
-						_placeholder={{ color: theme.colors.textLight }}
-						onClick={() => setIsDatePickerOpen(true)}
-					/>
-					<InputRightElement>
-						<IconButton
-							icon={<CiCalendarDate />}
-							variant="link"
-							size="sm"
+				<VStack align="stretch">
+					<InputGroup>
+						<Input
+							placeholder="Select Departure Date"
+							readOnly
+							value={departureDate ? departureDate.toDateString() : ''}
+							bg={theme.colors.background}
+							_placeholder={{ color: theme.colors.textLight }}
 							onClick={() => setIsDatePickerOpen(true)}
 						/>
-					</InputRightElement>
-				</InputGroup>
+						<InputRightElement>
+							<IconButton
+								icon={<CiCalendarDate />}
+								variant="link"
+								size="sm"
+								onClick={() => setIsDatePickerOpen(true)}
+							/>
+						</InputRightElement>
+					</InputGroup>
+				</VStack>
 
-				<HStack>
-					<Text>Price($):</Text>
-					<Input
-						onChange={(e) => setPrice(e.target.value)}
-						placeholder="50.00"
-						bg={theme.colors.background}
-						_placeholder={{ color: theme.colors.textLight }}
-					/>
-				</HStack>
-
-				<HStack>
-					<Text>Number of Seats:</Text>
-					<Input
-						onChange={(e) => setNumSeats(e.target.value)}
-						placeholder="4"
-						type="number"
-						maxW="40"
-						bg={theme.colors.background}
-						_placeholder={{ color: theme.colors.textLight }}
-					/>
-				</HStack>
+				<VStack align="stretch">
+					<HStack>
+						<Text>Price($):</Text>
+						<Input
+							onChange={(e) => setPrice(e.target.value)}
+							placeholder="50.00"
+							bg={theme.colors.background}
+							_placeholder={{ color: theme.colors.textLight }}
+						/>
+					</HStack>
+				</VStack>
+				<VStack align="stretch">
+					<HStack>
+						<Text>Number of Seats:</Text>
+						<Input
+							onChange={(e) => setNumSeats(e.target.value)}
+							placeholder="4"
+							type="number"
+							maxW="40"
+							bg={theme.colors.background}
+							_placeholder={{ color: theme.colors.textLight }}
+						/>
+					</HStack>
+				</VStack>
 			</SimpleGrid>
 
 			<Box display="flex" justifyContent="center" mt={4} width="100%">
