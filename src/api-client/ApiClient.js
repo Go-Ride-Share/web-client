@@ -41,7 +41,7 @@ export async function getUser() {
 
 export async function editUser(editUserRequest) {
 	const result = await makeAuthenticatedRequest('/users', {
-		method: 'POST',
+		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json',
 		},
