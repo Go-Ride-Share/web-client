@@ -10,7 +10,7 @@ async function handleResponse(response) {
 }
 
 export async function createUser(createUserRequest) {
-	const response = await fetch(`${API_AUTH_URL}/CreateUser`, {
+	const response = await fetch(`${API_AUTH_URL}/users`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function createUser(createUserRequest) {
 }
 
 export async function login(loginRequest) {
-	const response = await fetch(`${API_AUTH_URL}/VerifyLoginCredentials`, {
+	const response = await fetch(`${API_AUTH_URL}/users/login`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -32,15 +32,16 @@ export async function login(loginRequest) {
 }
 
 export async function getUser() {
-	const result = await makeAuthenticatedRequest('/GetUser', {
+	const userId = localStorage.getItem('user_id');
+	const result = await makeAuthenticatedRequest(`/users/${userId}`, {
 		method: 'GET',
 	});
 	return result;
 }
 
 export async function editUser(editUserRequest) {
-	const result = await makeAuthenticatedRequest('/EditUser', {
-		method: 'POST',
+	const result = await makeAuthenticatedRequest('/users', {
+		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -70,7 +71,7 @@ export async function makeAuthenticatedRequest(endpoint, options = {}) {
 }
 
 export async function savePost(savePostRequest) {
-	const result = await makeAuthenticatedRequest('/SavePost', {
+	const result = await makeAuthenticatedRequest('/posts', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -85,14 +86,14 @@ export async function getPosts(userId) {
 		return { error: 'User ID is required' };
 	}
 
-	const result = await makeAuthenticatedRequest(`/getPosts?userId=${userId}`, {
+	const result = await makeAuthenticatedRequest(`/posts/${userId}`, {
 		method: 'GET',
 	});
 	return result;
 }
 
 export async function getAllPosts() {
-	const response = await fetch(`${API_AUTH_URL}/getAllPosts`, {
+	const response = await fetch(`${API_AUTH_URL}/posts`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -102,19 +103,20 @@ export async function getAllPosts() {
 	return handleResponse(response);
 }
 
-export async function searchPosts() {
+export async function searchPosts(searchPostRequest) {
 	const response = await fetch(`${API_AUTH_URL}/posts/search`, {
-		method: 'GET',
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
+		body: JSON.stringify(searchPostRequest),
 	});
 
 	return handleResponse(response);
 }
 
 export async function getPost(postId) {
-	const response = await fetch(`${API_AUTH_URL}/posts/${postId}`, {
+	const response = await fetch(`${API_AUTH_URL}/posts?postId=${postId}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -125,7 +127,7 @@ export async function getPost(postId) {
 }
 
 export async function createConversation(createConversationRequest) {
-	const result = await makeAuthenticatedRequest('/CreateConversation', {
+	const result = await makeAuthenticatedRequest('/conversations', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -136,7 +138,7 @@ export async function createConversation(createConversationRequest) {
 }
 
 export async function postMessage(postMessageRequest) {
-	const result = await makeAuthenticatedRequest('/PostMessage', {
+	const result = await makeAuthenticatedRequest('/messages', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -147,7 +149,7 @@ export async function postMessage(postMessageRequest) {
 }
 
 export async function getAllConversations() {
-	const result = await makeAuthenticatedRequest('/GetAllConversations', {
+	const result = await makeAuthenticatedRequest('/conversations', {
 		method: 'GET',
 	});
 	return result; 
@@ -155,8 +157,8 @@ export async function getAllConversations() {
 
 export async function pollConversation(conversationId, timeStamp) {
 	const endpoint = timeStamp
-		? `/PollConversation?conversationId=${conversationId}&timestamp=${timeStamp}`
-		: `/PollConversation?conversationId=${conversationId}`;
+		? `/messages/${conversationId}?timestamp=${timeStamp}`
+		: `/messages/${conversationId}`;
 	const result = await makeAuthenticatedRequest(endpoint, {
 		method: 'GET',
 	});
