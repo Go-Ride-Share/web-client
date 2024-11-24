@@ -30,8 +30,8 @@ const SearchRides = ({ setPosts }) => {
 	const [departureDate, setDepartureDate] = useState(null);
 	const [departureLocation, setDepartureLocation] = useState('');
 	const [destinationLocation, setDestinationLocation] = useState('');
-	const [numSeats, setNumSeats] = useState('');
-	const [price, setPrice] = useState('');
+	const [numSeats, setNumSeats] = useState(0);
+	const [price, setPrice] = useState(0);
 	const [mapSelection, setMapSelection] = useState('');
 	const [mapDisabled, setMapDisabled] = useState(true);
 	const [error, setError] = useState('');
@@ -152,7 +152,7 @@ const SearchRides = ({ setPosts }) => {
 				destinationLat: Number(destinationLat),
 				destinationLng: Number(destinationLng),
 				departureDate: departureDate ? departureDate.toISOString() : null,
-				numSeats: String(numSeats) || null,
+				numSeats: Number(numSeats) || null,
 				price: Number(price) || null,
 			};
 
@@ -304,6 +304,7 @@ const SearchRides = ({ setPosts }) => {
 						<Input
 							onChange={(e) => setPrice(e.target.value)}
 							placeholder="50.00"
+							type="number"
 							bg={theme.colors.background}
 							_placeholder={{ color: theme.colors.textLight }}
 						/>
