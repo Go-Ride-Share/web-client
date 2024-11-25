@@ -13,8 +13,8 @@ const HomePage = () => {
 			w="100%"
 			alignItems="stretch"
 		>
-			<Stack fontFamily="CaviarDreams" mt={"0"}>
-				<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams">
+			<Stack fontFamily="CaviarDreams" mt={"-4"}>
+				<Heading as="h2" size="lg" textAlign="center" fontFamily="CaviarDreams" mb={"4"}>
 					{'Search For Rides'}
 				</Heading>
 				<Box flex="2" mr={{ base: 0, md: 6 }} mb={{ base: 6, md: 0 }}>
