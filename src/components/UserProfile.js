@@ -126,6 +126,7 @@ const UserProfile = () => {
 			}
 			fetchUserData();
 			setIsChanged(false);
+			window.location.href = '/user';
 		}
 	};
 

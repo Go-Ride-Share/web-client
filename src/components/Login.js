@@ -9,7 +9,7 @@ import {
 	Card,
 	useTheme,
 } from '@chakra-ui/react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
 import { passwordLogin, googleLogin } from '../api-client/ApiClient';
@@ -18,7 +18,6 @@ import { GoogleOAuthProvider, useGoogleLogin} from '@react-oauth/google';
 
 const Login = () => {
 	const theme = useTheme();
-	const navigate = useNavigate();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -47,7 +46,7 @@ const Login = () => {
 					localStorage.setItem('user_id', user_id);
 					localStorage.setItem('user_photo', result.photo);
 
-					navigate('/');
+					window.location.href = '/';
 				} else {
 					setError('Login failed: Missing required token data.');
 				}

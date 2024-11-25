@@ -11,6 +11,7 @@ import {
 	Spinner,
 	IconButton,
 	Image,
+	Flex,
 } from '@chakra-ui/react';
 import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { FiSend } from 'react-icons/fi';
@@ -22,10 +23,12 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 	const [newMessage, setNewMessage] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState();
+	const [isInitialLoad, setIsInitialLoad] = useState(true);
 	const userId = localStorage.getItem('user_id');
 	const storageKey = `conversation_${conversationId}`;
 	const [latestMessageTimestamp, setLatestMessageTimestamp] = useState(null);
-	const messagesEndRef = useRef(null);
+	const messagesContainerRef = useRef(null);
+	const maxMessageLength = 500;
 
 	useEffect(() => {
 		const fetchMessages = async () => {
@@ -37,7 +40,7 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 				setMessages(storedMessages);
 
 				// Get the timestamp of the last message
-				const lastStoredMessage = storedMessages[storedMessages.length - 1];
+				const lastStoredMessage = storedMessages[0];
 				const lastTimestamp =
 					lastStoredMessage?.timeStamp || latestMessageTimestamp;
 
@@ -58,14 +61,18 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 
 					// Only update the state and localStorage if there are new messages
 					if (newMessages.length > 0) {
-						const updatedMessages = [...storedMessages, ...newMessages];
+						const updatedMessages = [...newMessages, ...storedMessages];
 
 						setMessages(updatedMessages);
 						localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
 
 						// Update the latest timestamp based on the new messages
-						const latestMessage = updatedMessages[updatedMessages.length - 1];
+						const latestMessage = updatedMessages[0];
 						setLatestMessageTimestamp(latestMessage.timeStamp);
+
+						if (!isInitialLoad) {
+							scrollToBottom();
+						}
 					}
 				} else if (storedMessages.length === 0) {
 					setErrorMessage('No messages found for this conversation.');
@@ -74,6 +81,7 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 				setErrorMessage('Failed to fetch conversation messages.');
 			} finally {
 				setLoading(false);
+				setIsInitialLoad(false);
 			}
 		};
 
@@ -82,17 +90,14 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 		// Set up polling to fetch new messages periodically
 		const pollMessages = setInterval(fetchMessages, 3000);
 		return () => clearInterval(pollMessages);
-	}, [conversationId, latestMessageTimestamp, storageKey]);
+	}, [conversationId, latestMessageTimestamp, storageKey, isInitialLoad]);
 
-	useEffect(() => {
-		// Auto-scroll to the latest message when messages update
-		if (
-			messagesEndRef.current &&
-			typeof messagesEndRef.current.scrollIntoView === 'function'
-		) {
-			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+	const scrollToBottom = () => {
+		if (messagesContainerRef.current) {
+			messagesContainerRef.current.scrollTop =
+				messagesContainerRef.current.scrollHeight;
 		}
-	}, [messages]);
+	};
 
 	const handleSendMessage = async () => {
 		if (!newMessage.trim()) return;
@@ -117,7 +122,7 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 	};
 
 	return (
-		<Box>
+		<Flex direction="column" height="100%">
 			<Box display="flex" alignItems="center" mb={4}>
 				<Button onClick={onBack} aria-label="back">
 					<ChevronLeftIcon />
@@ -137,68 +142,78 @@ const ChatBox = ({ conversationId, onBack, userName, userPhoto }) => {
 					</Text>
 				)}
 			</Box>
-			<VStack
-				spacing={3}
-				bg={theme.colors.background}
-				padding="4"
-				borderRadius="md"
-				overflowY="auto"
-				height="37rem"
-			>
-				{loading && messages.length === 0 ? (
-					<Spinner color={theme.colors.secondary} size="lg" />
-				) : errorMessage ? (
-					<Text color="red.500">{errorMessage}</Text>
-				) : (
-					messages
-						.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp))
-						.map((message, index) => (
-							<Box
-								key={index}
-								alignSelf={
-									message.senderId === userId ? 'flex-end' : 'flex-start'
-								}
-								bg={
-									message.senderId === userId
-										? theme.colors.secondary
-										: theme.colors.primary
-								}
-								color={theme.colors.text}
-								borderRadius="md"
-								padding="2"
-								maxWidth="75%"
-							>
-								<Text>{message.contents}</Text>
-								<Text fontSize="xs" color="gray.500">
-									{new Date(message.timeStamp).toLocaleString()}
-								</Text>
-							</Box>
-						))
-				)}
-
-				<div ref={messagesEndRef} />
-			</VStack>
-			<InputGroup mt={4}>
-				<Input
-					placeholder="Type your message..."
-					value={newMessage}
-					onChange={(e) => setNewMessage(e.target.value)}
+			<Flex direction="column" flex="1" overflow="hidden">
+				<VStack
+					ref={messagesContainerRef}
+					spacing={3}
 					bg={theme.colors.background}
-				/>
-				<InputRightElement>
-					<IconButton
-						variant="ghost"
-						onClick={handleSendMessage}
-						aria-label="send message"
-						isDisabled={!newMessage.trim()}
-						_hover={{ backgroundColor: 'transparent' }}
-						_focus={{ backgroundColor: 'transparent' }}
-					>
-						<FiSend />
-					</IconButton>
-				</InputRightElement>
-			</InputGroup>
-		</Box>
+					padding="4"
+					borderRadius="md"
+					overflowY="auto"
+					flex="1"
+				>
+					{loading && messages.length === 0 ? (
+						<Spinner color={theme.colors.secondary} size="lg" />
+					) : errorMessage ? (
+						<Text color="red.500">{errorMessage}</Text>
+					) : (
+						messages
+							.sort((a, b) => new Date(a.timeStamp) - new Date(b.timeStamp))
+							.map((message, index) => (
+								<Box
+									key={index}
+									alignSelf={
+										message.senderId === userId ? 'flex-end' : 'flex-start'
+									}
+									bg={
+										message.senderId === userId
+											? theme.colors.secondary
+											: theme.colors.primary
+									}
+									color={theme.colors.text}
+									borderRadius="md"
+									padding="2"
+									maxWidth="75%"
+								>
+									<Text>{message.contents}</Text>
+									<Text fontSize="xs" color="gray.500">
+										{new Date(message.timeStamp).toLocaleString()}
+									</Text>
+								</Box>
+							))
+					)}
+				</VStack>
+			</Flex>
+			<Box mt="3">
+				<InputGroup>
+					<Input
+						placeholder="Type your message..."
+						value={newMessage}
+						onChange={(e) => {
+							if (e.target.value.length <= maxMessageLength) {
+								setNewMessage(e.target.value);
+							}
+						}}
+						bg={theme.colors.background}
+					/>
+					<InputRightElement>
+						<IconButton
+							variant="ghost"
+							onClick={handleSendMessage}
+							aria-label="send message"
+							isDisabled={!newMessage.trim()}
+							_hover={{ backgroundColor: 'transparent' }}
+							_focus={{ backgroundColor: 'transparent' }}
+						>
+							<FiSend />
+						</IconButton>
+					</InputRightElement>
+				</InputGroup>
+				<Text fontSize="xs" color="gray.500" mt={1}>
+					{newMessage.length}/{maxMessageLength} characters
+				</Text>
+			</Box>
+		</Flex>
 	);
 };
 
