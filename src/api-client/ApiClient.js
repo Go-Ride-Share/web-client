@@ -10,7 +10,7 @@ async function handleResponse(response) {
 }
 
 export async function createUser(createUserRequest) {
-	const response = await fetch(`${API_AUTH_URL}/CreateUser`, {
+	const response = await fetch(`${API_AUTH_URL}/users`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function createUser(createUserRequest) {
 }
 
 export async function passwordLogin(loginRequest) {
-	const response = await fetch(`${API_AUTH_URL}/VerifyLoginCredentials`, {
+	const response = await fetch(`${API_AUTH_URL}/Users/PasswordLogin`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export async function passwordLogin(loginRequest) {
 }
 
 export async function googleLogin(code) {
-	const response = await fetch(`${API_AUTH_URL}/GoogleSignIn`, {
+	const response = await fetch(`${API_AUTH_URL}/Users/GoogleLogin`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

@@ -48,7 +48,7 @@ describe('ApiClient', () => {
 
 			const result = await createUser(createUserRequest);
 
-			expect(fetch).toHaveBeenCalledWith(`${API_AUTH_URL}/CreateUser`, {
+			expect(fetch).toHaveBeenCalledWith(`${API_AUTH_URL}/users`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ describe('ApiClient', () => {
 			const result = await login(loginRequest);
 
 			expect(fetch).toHaveBeenCalledWith(
-				`${API_AUTH_URL}/VerifyLoginCredentials`,
+				`${API_AUTH_URL}/Users/PasswordLogin`,
 				{
 					method: 'POST',
 					headers: {
