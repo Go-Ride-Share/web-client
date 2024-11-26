@@ -7,7 +7,7 @@ import Login from './Login';
 import * as ApiClient from '../api-client/ApiClient';
 
 jest.mock('../api-client/ApiClient', () => ({
-	login: jest.fn(),
+	passwordLogin: jest.fn(),
 }));
 
 const mockNavigate = jest.fn();
@@ -39,12 +39,13 @@ describe('Login Component', () => {
 		// Check if the input fields and button are rendered
 		expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
 		expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-		expect(screen.getByText(/login/i)).toBeInTheDocument();
+		expect(screen.getByText(/^login$/i)).toBeInTheDocument();
+		expect(screen.getByText(/Login with Google/i)).toBeInTheDocument();
 	});
 
 	test('displays an error message on failed login', async () => {
 		// Mock the API client to return an error
-		ApiClient.login.mockResolvedValueOnce({ error: 'Invalid credentials' });
+		ApiClient.passwordLogin.mockResolvedValueOnce({ error: 'Invalid credentials' });
 
 		render(
 			<Router>
@@ -61,10 +62,10 @@ describe('Login Component', () => {
 		fireEvent.change(screen.getByPlaceholderText(/password/i), {
 			target: { value: 'password123' },
 		});
-		fireEvent.click(screen.getByText(/login/i));
+		fireEvent.click(screen.getByText(/^login$/i));
 
 		await waitFor(() => {
-			expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+			expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument();
 		});
 
 		expect(mockNavigate).not.toHaveBeenCalled();
@@ -72,7 +73,7 @@ describe('Login Component', () => {
 
 	test('logs in successfully and stores tokens in localStorage', async () => {
 		// Mock a successful login
-		ApiClient.login.mockResolvedValueOnce({
+		ApiClient.passwordLogin.mockResolvedValueOnce({
 			logic_token: 'logicToken123',
 			db_token: 'dbToken456',
 			user_id: 'user1'
@@ -93,7 +94,7 @@ describe('Login Component', () => {
 		fireEvent.change(screen.getByPlaceholderText(/password/i), {
 			target: { value: 'password123' },
 		});
-		fireEvent.click(screen.getByText(/login/i));
+		fireEvent.click(screen.getByText(/^login$/i));
 
 		await waitFor(() => {
 			expect(localStorage.setItem).toHaveBeenCalledWith(
@@ -122,18 +123,18 @@ describe('Login Component', () => {
 		);
 
 		// Initially, button should be disabled because inputs are empty
-		expect(screen.getByText(/login/i)).toBeDisabled();
+		expect(screen.getByText(/^login$/i)).toBeDisabled();
 
 		// Fill email but not password, button should still be disabled
 		fireEvent.change(screen.getByPlaceholderText(/email address/i), {
 			target: { value: 'test@example.com' },
 		});
-		expect(screen.getByText(/login/i)).toBeDisabled();
+		expect(screen.getByText(/^login$/i)).toBeDisabled();
 
 		// Fill password, button should be enabled now
 		fireEvent.change(screen.getByPlaceholderText(/password/i), {
 			target: { value: 'password123' },
 		});
-		expect(screen.getByText(/login/i)).toBeEnabled();
+		expect(screen.getByText(/^login$/i)).toBeEnabled();
 	});
 });

@@ -1,6 +1,6 @@
 import {
 	createUser,
-	login,
+	passwordLogin,
 	makeAuthenticatedRequest,
 	editUser,
 	getUser,
@@ -105,7 +105,7 @@ describe('ApiClient', () => {
 				password: 'password123',
 			};
 
-			const result = await login(loginRequest);
+			const result = await passwordLogin(loginRequest);
 
 			expect(fetch).toHaveBeenCalledWith(
 				`${API_AUTH_URL}/Users/PasswordLogin`,
@@ -138,7 +138,7 @@ describe('ApiClient', () => {
 				password: 'wrongpassword',
 			};
 
-			const result = await login(loginRequest);
+			const result = await passwordLogin(loginRequest);
 
 			expect(result).toEqual({ error: 'Invalid login credentials' });
 		});
