@@ -75,7 +75,7 @@ const Login = () => {
 					localStorage.setItem('user_id', user_id);
 					localStorage.setItem('user_photo', result.photo);
 
-					navigate('/');
+					window.location.href = '/';
 				} else {
 					setError('Login failed: Missing required token data.');
 				}
