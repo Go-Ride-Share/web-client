@@ -58,34 +58,34 @@ const Login = () => {
 		}
 	};
 
-const handleSuccessfullGoogleSignIn = async (googleResponse) => {	
-	setIsLoading(true);
-	setError('');
+	const handleSuccessfullGoogleSignIn = async (googleResponse) => {	
+		setIsLoading(true);
+		setError('');
 
-	try {
-		const result = await googleLogin(googleResponse.code);
-		if (result.error) {
-			setError(result.error);
-		} else {
-			const { logic_token, db_token, user_id } = result;
-
-			if (logic_token && db_token && user_id) {
-				localStorage.setItem('logic_token', logic_token);
-				localStorage.setItem('db_token', db_token);
-				localStorage.setItem('user_id', user_id);
-				localStorage.setItem('user_photo', result.photo);
-
-				navigate('/');
+		try {
+			const result = await googleLogin(googleResponse.code);
+			if (result.error) {
+				setError(result.error);
 			} else {
-				setError('Login failed: Missing required token data.');
+				const { logic_token, db_token, user_id } = result;
+
+				if (logic_token && db_token && user_id) {
+					localStorage.setItem('logic_token', logic_token);
+					localStorage.setItem('db_token', db_token);
+					localStorage.setItem('user_id', user_id);
+					localStorage.setItem('user_photo', result.photo);
+
+					navigate('/');
+				} else {
+					setError('Login failed: Missing required token data.');
+				}
 			}
+		} catch (error) {
+			setError('An error occurred during login.');
+		} finally {
+			setIsLoading(false);
 		}
-	} catch (error) {
-		setError('An error occurred during login.');
-	} finally {
-		setIsLoading(false);
-	}
-}
+	};
 
 	const GoogleSignIn = () => {
 		const login = useGoogleLogin({
