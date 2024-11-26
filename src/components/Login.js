@@ -12,8 +12,9 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
-import { login } from '../api-client/ApiClient';
+import { passwordLogin, googleLogin } from '../api-client/ApiClient';
 import SHA256 from 'crypto-js/sha256';
+import { GoogleOAuthProvider, useGoogleLogin} from '@react-oauth/google';
 
 const Login = () => {
 	const theme = useTheme();
@@ -25,13 +26,15 @@ const Login = () => {
 	const handleEmailChange = (e) => setEmail(e.target.value);
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 
-	const handleLogin = async () => {
+	const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
+	const handlePasswordLogin = async () => {
 		setIsLoading(true);
 		setError('');
 		const hashedPassword = SHA256(password).toString();
 
 		try {
-			const result = await login({ email, password: hashedPassword });
+			const result = await passwordLogin({ email, password: hashedPassword });
 			if (result.error) {
 				setError(result.error);
 			} else {
@@ -54,6 +57,50 @@ const Login = () => {
 			setIsLoading(false);
 		}
 	};
+
+	const handleSuccessfullGoogleSignIn = async (googleResponse) => {	
+		setIsLoading(true);
+		setError('');
+
+		try {
+			const result = await googleLogin(googleResponse.code);
+			if (result.error) {
+				setError(result.error);
+			} else {
+				const { logic_token, db_token, user_id } = result;
+
+				if (logic_token && db_token && user_id) {
+					localStorage.setItem('logic_token', logic_token);
+					localStorage.setItem('db_token', db_token);
+					localStorage.setItem('user_id', user_id);
+					localStorage.setItem('user_photo', result.photo);
+
+					window.location.href = '/';
+				} else {
+					setError('Login failed: Missing required token data.');
+				}
+			}
+		} catch (error) {
+			setError('An error occurred during login.');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const GoogleSignIn = () => {
+		const login = useGoogleLogin({
+			flow: "auth-code", // Use authorization code flow
+			onSuccess: handleSuccessfullGoogleSignIn,
+			onError: () => {setIsLoading(false)},
+			scope: "openid profile https://www.googleapis.com/auth/user.phonenumbers.read",
+		});
+	
+		return (
+			<button onClick={() => login()}>Login with Google</button>
+		);
+	};
+
+	
 
 	return (
 		<Stack spacing={6} maxW="md" mx="auto" mt="8" fontFamily="CaviarDreams">
@@ -105,7 +152,7 @@ const Login = () => {
 						boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
 						size="md"
 						isDisabled={!email || !password || isLoading}
-						onClick={handleLogin}
+						onClick={handlePasswordLogin}
 					>
 						{isLoading ? (
 							<span className="loading-dots">Logging in...</span>
@@ -113,6 +160,9 @@ const Login = () => {
 							'Login'
 						)}
 					</CustomButton>
+					<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+						<GoogleSignIn />
+    				</GoogleOAuthProvider>
 					<Text textAlign="left">
 						Don't have an account?{' '}
 						<Link as={RouterLink} to="/signup" color="blue.500">
