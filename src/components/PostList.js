@@ -12,15 +12,18 @@ import {
 	useDisclosure,
 	Tooltip,
 	Flex,
+	Image,
 } from '@chakra-ui/react';
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
+import { MdOutlineMessage } from 'react-icons/md';
 import { getPosts, getAllPosts } from '../api-client/ApiClient';
 import { Link } from 'react-router-dom';
 import { isLoggedIn } from './Utils.js';
 import CustomButton from './Button';
 import NewConversationDrawer from './NewConversationDrawer';
+import DefaultPhoto from '../assets/images/DefaultUserImage.png';
 
-const PostList = ({ usersRides }) => {
+const PostList = ({ usersRides, postsProp }) => {
 	const theme = useTheme();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [posts, setPosts] = useState([]);
@@ -32,13 +35,27 @@ const PostList = ({ usersRides }) => {
 	const postsPerPage = 3;
 
 	useEffect(() => {
-		if (loggedIn || !usersRides) {
-			const userId = localStorage.getItem('user_id');
+		const userId = localStorage.getItem('user_id');
+
+		const sortPostsByDate = (posts) =>
+			posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+		if (postsProp) {
+			let filteredPosts = postsProp;
+
+			if (loggedIn) {
+				filteredPosts = postsProp.filter((post) => post.posterId !== userId);
+			}
+
+			setPosts(filteredPosts);
+			setLoading(false);
+		} else if (loggedIn || !usersRides) {
 			const fetchPosts = async () => {
 				setLoading(true);
-				let response = null;
 
 				try {
+					let response = null;
+
 					if (usersRides) {
 						response = await getPosts(userId);
 					} else {
@@ -52,10 +69,7 @@ const PostList = ({ usersRides }) => {
 					if (response?.error) {
 						setError(response.error);
 					} else if (Array.isArray(response)) {
-						const sortedPosts = response.sort(
-							(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-						);
-						setPosts(sortedPosts);
+						setPosts(sortPostsByDate(response));
 					} else {
 						setError('Unexpected response format');
 					}
@@ -70,7 +84,7 @@ const PostList = ({ usersRides }) => {
 		} else {
 			setLoading(false);
 		}
-	}, [loggedIn, usersRides]);
+	}, [loggedIn, usersRides, postsProp]);
 
 	const indexOfLastPost = currentPage * postsPerPage;
 	const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -96,6 +110,10 @@ const PostList = ({ usersRides }) => {
 		}
 		setSelectedPost(post);
 		onOpen();
+	};
+
+	const getLocationName = (name, lat, lng) => {
+		return name && name.trim() !== '' ? name : `Lat: ${lat}, Lng: ${lng}`;
 	};
 
 	return (
@@ -133,7 +151,7 @@ const PostList = ({ usersRides }) => {
 						<Text color="red.500">{error}</Text>
 					</Box>
 				) : (
-					<Flex direction="column" height="100%">
+					<Flex direction="column" height="100%" minH="auto">
 						<Stack spacing={4} flex="1">
 							{currentPosts.length === 0 ? (
 								<Text textAlign="center" color={theme.colors.text}>
@@ -148,20 +166,29 @@ const PostList = ({ usersRides }) => {
 										w="100%"
 										bg={theme.colors.background}
 										color={theme.colors.text}
-										position="relative" 
+										position="relative"
+										minH="15vh"
 									>
 										<HStack justify="space-between" w="100%">
 											<Box flex="1" mr={4}>
 												<Heading as="h3" size="md" mb="2">
-													{post.name}
+													<Link to={`/post/${post.postId}`}>{post.name}</Link>
 												</Heading>
 												<Text>
 													<strong>Origin:</strong>{' '}
-													{`Lat: ${post.originLat}, Lng: ${post.originLng}`}
+													{getLocationName(
+														post.originName,
+														post.originLat,
+														post.originLng
+													)}
 												</Text>
 												<Text>
 													<strong>Destination:</strong>{' '}
-													{`Lat: ${post.destinationLat}, Lng: ${post.destinationLng}`}
+													{getLocationName(
+														post.destinationName,
+														post.destinationLat,
+														post.destinationLng
+													)}
 												</Text>
 												<Text>
 													<strong>Departure Date:</strong>{' '}
@@ -182,21 +209,63 @@ const PostList = ({ usersRides }) => {
 													{post.seatsAvailable}
 												</Text>
 											</Box>
+
 											{!usersRides && (
-												<Box position="absolute" bottom="2" right="2">
-													<Tooltip
-														label={!loggedIn ? 'Login to contact' : ''}
-														shouldWrapChildren
-														isDisabled={loggedIn}
-													>
-														<CustomButton
-															isDisabled={!loggedIn}
-															onClick={() => handleContactClick(post)}
+												<Flex
+													direction="column"
+													justify="space-between"
+													h="100%"
+													minH="18vh"
+												>
+													{post.user && (
+														<Box textAlign="right" ml="auto">
+															<Image
+																src={post.user.photo || DefaultPhoto}
+																alt="User photo"
+																boxSize="50px"
+																borderRadius="full"
+																mb="2"
+																display="block"
+																marginLeft="auto"
+															/>
+															<Text
+																fontSize="sm"
+																fontWeight="bold"
+																textAlign="right"
+															>
+																{post.user.name.split(' ')[0]}
+															</Text>
+														</Box>
+													)}
+													<Box mt="auto" w="100%">
+														<Tooltip
+															label={!loggedIn ? 'Login to contact' : ''}
+															shouldWrapChildren
+															isDisabled={loggedIn}
 														>
-															Contact
-														</CustomButton>
-													</Tooltip>
-												</Box>
+															<CustomButton
+																isDisabled={!loggedIn}
+																onClick={() => handleContactClick(post)}
+																size="sm"
+																w="100%"
+															>
+																<Box as={MdOutlineMessage} mr="1" /> Contact
+															</CustomButton>
+														</Tooltip>
+													</Box>
+												</Flex>
+											)}
+											{usersRides && (
+												<Flex position="absolute" bottom="2" right="2">
+													<Button
+														as={Link}
+														to={`/editPost/${post.postId}`}
+														size="sm"
+														colorScheme="blue"
+													>
+														Edit Post
+													</Button>
+												</Flex>
 											)}
 										</HStack>
 									</Card>
@@ -204,7 +273,7 @@ const PostList = ({ usersRides }) => {
 							)}
 						</Stack>
 						{posts.length > 0 && !loading && (
-							<HStack justify="center" spacing={2} mt={4}>
+							<HStack justify="center" spacing={2} mt="2vh">
 								<Button
 									size="sm"
 									onClick={handlePrevPage}

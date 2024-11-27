@@ -1,47 +1,101 @@
-import React from "react";
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import React, { useEffect, useState } from 'react';
+import { GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
 
 const containerStyle = {
-  width:  '100%',
-  height: '100%',
+	width: '100%',
+	height: '100%',
 };
 
-// Winnipeg
-const center = {
-  lat: 49.8954,
-  lng: -97.1385,
-};
+const GoogleMapComponent = ({
+	mapDisabled,
+	clicked,
+	originLat,
+	originLng,
+	destinationLat,
+	destinationLng,
+}) => {
+	const [directions, setDirections] = useState(null);
+	const [map, setMap] = useState(null);
 
-const GoogleMapComponent = ({mapDisabled, clicked}) => {  
-  const setUserLocation = (position) => {
-    center.lat = position.coords.latitude
-    center.lng = position.coords.longitude
-  }
+	useEffect(() => {
+		if (originLat && originLng && destinationLat && destinationLng) {
+			const directionsService = new window.google.maps.DirectionsService();
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(setUserLocation, (error) => {
-      console.error("Error getting location: ", error);
-    });
-  }
+			directionsService.route(
+				{
+					origin: new window.google.maps.LatLng(originLat, originLng),
+					destination: new window.google.maps.LatLng(
+						destinationLat,
+						destinationLng
+					),
+					travelMode: window.google.maps.TravelMode.DRIVING,
+				},
+				(result, status) => {
+					if (status === 'OK') {
+						setDirections(result);
 
-  return (
-    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={10}
-        onClick={clicked}
-        options={{
-          draggable: !mapDisabled,    
-          scrollwheel: !mapDisabled, 
-          disableDefaultUI: mapDisabled,
-          clickableIcons: !mapDisabled  
-        }}
-      >
-        <Marker position={center} />
-      </GoogleMap>
-    </LoadScript>
-  );
+						const bounds = new window.google.maps.LatLngBounds();
+						bounds.extend(new window.google.maps.LatLng(originLat, originLng));
+						bounds.extend(
+							new window.google.maps.LatLng(destinationLat, destinationLng)
+						);
+
+						if (map) {
+							map.fitBounds(bounds);
+						}
+					} else {
+						console.error('Directions request failed due to ' + status);
+					}
+				}
+			);
+		}
+	}, [originLat, originLng, destinationLat, destinationLng, map]);
+
+	const onLoad = (mapInstance) => {
+		setMap(mapInstance);
+	};
+
+	useEffect(() => {
+		const defaultCenter = {
+			lat: originLat || 49.8951,
+			lng: originLng || -97.1385,
+		};
+
+		if (map && !mapDisabled) {
+			if (originLat && originLng && destinationLat && destinationLng) {
+				const bounds = new window.google.maps.LatLngBounds();
+				bounds.extend(new window.google.maps.LatLng(originLat, originLng));
+				bounds.extend(
+					new window.google.maps.LatLng(destinationLat, destinationLng)
+				);
+				map.fitBounds(bounds);
+			} else {
+				map.setCenter(defaultCenter);
+				map.setZoom(10);
+			}
+		} else if (map && mapDisabled) {
+			map.setCenter(defaultCenter);
+			map.setZoom(10);
+		}
+	}, [map, mapDisabled, originLat, originLng, destinationLat, destinationLng]);
+
+	return (
+		<GoogleMap
+			mapContainerStyle={containerStyle}
+			center={{ lat: originLat || 49.8951, lng: originLng || -97.1385 }}
+			onClick={clicked}
+			onLoad={onLoad}
+			options={{
+				draggable: !mapDisabled,
+				scrollwheel: !mapDisabled,
+				disableDefaultUI: mapDisabled,
+				clickableIcons: !mapDisabled,
+				gestureHandling: 'auto',
+			}}
+		>
+			{directions && <DirectionsRenderer directions={directions} />}
+		</GoogleMap>
+	);
 };
 
 export default GoogleMapComponent;
