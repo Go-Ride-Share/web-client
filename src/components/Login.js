@@ -8,13 +8,15 @@ import {
 	Text,
 	Card,
 	useTheme,
+	Button,
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
 import { passwordLogin, googleLogin } from '../api-client/ApiClient';
 import SHA256 from 'crypto-js/sha256';
-import { GoogleOAuthProvider, useGoogleLogin} from '@react-oauth/google';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import googleLogo from '../assets/images/google.svg';
 
 const Login = () => {
 	const theme = useTheme();
@@ -58,7 +60,7 @@ const Login = () => {
 		}
 	};
 
-	const handleSuccessfullGoogleSignIn = async (googleResponse) => {	
+	const handleSuccessfullGoogleSignIn = async (googleResponse) => {
 		setIsLoading(true);
 		setError('');
 
@@ -89,18 +91,32 @@ const Login = () => {
 
 	const GoogleSignIn = () => {
 		const login = useGoogleLogin({
-			flow: "auth-code", // Use authorization code flow
+			flow: 'auth-code', // Use authorization code flow
 			onSuccess: handleSuccessfullGoogleSignIn,
-			onError: () => {setIsLoading(false)},
-			scope: "openid profile https://www.googleapis.com/auth/user.phonenumbers.read",
+			onError: () => {
+				setIsLoading(false);
+			},
+			scope:
+				'openid profile https://www.googleapis.com/auth/user.phonenumbers.read',
 		});
-	
+
 		return (
-			<button onClick={() => login()}>Login with Google</button>
+			<Button
+				onClick={login}
+				leftIcon={<Image src={googleLogo} alt="Google logo" boxSize="20px" />}
+				bg={'white'}
+				color={theme.colors.text}
+				_hover={{
+					bg: 'white',
+					boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+				}}
+				boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+				size="md"
+			>
+				Login with Google
+			</Button>
 		);
 	};
-
-	
 
 	return (
 		<Stack spacing={6} maxW="md" mx="auto" mt="8" fontFamily="CaviarDreams">
@@ -162,7 +178,7 @@ const Login = () => {
 					</CustomButton>
 					<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 						<GoogleSignIn />
-    				</GoogleOAuthProvider>
+					</GoogleOAuthProvider>
 					<Text textAlign="left">
 						Don't have an account?{' '}
 						<Link as={RouterLink} to="/signup" color="blue.500">
