@@ -8,15 +8,15 @@ import {
 	Text,
 	Card,
 	useTheme,
-	Button,
+	// Button,
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import logo from '../assets/images/LogoNotYellow.png';
 import CustomButton from './Button';
-import { passwordLogin, googleLogin } from '../api-client/ApiClient';
+import { passwordLogin } from '../api-client/ApiClient';
 import SHA256 from 'crypto-js/sha256';
-import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
-import googleLogo from '../assets/images/google.svg';
+// import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+//import googleLogo from '../assets/images/google.svg';
 
 const Login = () => {
 	const theme = useTheme();
@@ -28,7 +28,7 @@ const Login = () => {
 	const handleEmailChange = (e) => setEmail(e.target.value);
 	const handlePasswordChange = (e) => setPassword(e.target.value);
 
-	const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+	// const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 	const handlePasswordLogin = async () => {
 		setIsLoading(true);
@@ -60,63 +60,63 @@ const Login = () => {
 		}
 	};
 
-	const handleSuccessfullGoogleSignIn = async (googleResponse) => {
-		setIsLoading(true);
-		setError('');
+	// const handleSuccessfullGoogleSignIn = async (googleResponse) => {
+	// 	setIsLoading(true);
+	// 	setError('');
 
-		try {
-			const result = await googleLogin(googleResponse.code);
-			if (result.error) {
-				setError(result.error);
-			} else {
-				const { logic_token, db_token, user_id } = result;
+	// 	try {
+	// 		const result = await googleLogin(googleResponse.code);
+	// 		if (result.error) {
+	// 			setError(result.error);
+	// 		} else {
+	// 			const { logic_token, db_token, user_id } = result;
 
-				if (logic_token && db_token && user_id) {
-					localStorage.setItem('logic_token', logic_token);
-					localStorage.setItem('db_token', db_token);
-					localStorage.setItem('user_id', user_id);
-					localStorage.setItem('user_photo', result.photo);
+	// 			if (logic_token && db_token && user_id) {
+	// 				localStorage.setItem('logic_token', logic_token);
+	// 				localStorage.setItem('db_token', db_token);
+	// 				localStorage.setItem('user_id', user_id);
+	// 				localStorage.setItem('user_photo', result.photo);
 
-					window.location.href = '/';
-				} else {
-					setError('Login failed: Missing required token data.');
-				}
-			}
-		} catch (error) {
-			setError('An error occurred during login.');
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	// 				window.location.href = '/';
+	// 			} else {
+	// 				setError('Login failed: Missing required token data.');
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		setError('An error occurred during login.');
+	// 	} finally {
+	// 		setIsLoading(false);
+	// 	}
+	// };
 
-	const GoogleSignIn = () => {
-		const login = useGoogleLogin({
-			flow: 'auth-code', // Use authorization code flow
-			onSuccess: handleSuccessfullGoogleSignIn,
-			onError: () => {
-				setIsLoading(false);
-			},
-			scope:
-				'openid profile https://www.googleapis.com/auth/user.phonenumbers.read',
-		});
+	// const GoogleSignIn = () => {
+	// 	const login = useGoogleLogin({
+	// 		flow: 'auth-code', // Use authorization code flow
+	// 		onSuccess: handleSuccessfullGoogleSignIn,
+	// 		onError: () => {
+	// 			setIsLoading(false);
+	// 		},
+	// 		scope:
+	// 			'openid profile https://www.googleapis.com/auth/user.phonenumbers.read',
+	// 	});
 
-		return (
-			<Button
-				onClick={login}
-				leftIcon={<Image src={googleLogo} alt="Google logo" boxSize="20px" />}
-				bg={'white'}
-				color={theme.colors.text}
-				_hover={{
-					bg: 'white',
-					boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
-				}}
-				boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
-				size="md"
-			>
-				Login with Google
-			</Button>
-		);
-	};
+	// 	return (
+	// 		<Button
+	// 			onClick={login}
+	// 			leftIcon={<Image src={googleLogo} alt="Google logo" boxSize="20px" />}
+	// 			bg={'white'}
+	// 			color={theme.colors.text}
+	// 			_hover={{
+	// 				bg: 'white',
+	// 				boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.5)',
+	// 			}}
+	// 			boxShadow="inset 0 0 5px rgba(0, 0, 0, 0.3)"
+	// 			size="md"
+	// 		>
+	// 			Login with Google
+	// 		</Button>
+	// 	);
+	// };
 
 	return (
 		<Stack spacing={6} maxW="md" mx="auto" mt="8" fontFamily="CaviarDreams">
