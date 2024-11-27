@@ -176,9 +176,9 @@ const Login = () => {
 							'Login'
 						)}
 					</CustomButton>
-					<GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+					{/* <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 						<GoogleSignIn />
-					</GoogleOAuthProvider>
+					</GoogleOAuthProvider> */}
 					<Text textAlign="left">
 						Don't have an account?{' '}
 						<Link as={RouterLink} to="/signup" color="blue.500">

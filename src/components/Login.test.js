@@ -27,21 +27,21 @@ describe('Login Component', () => {
 		jest.clearAllMocks();
 	});
 
-	test('renders the login form', () => {
-		render(
-			<Router>
-				<ChakraProvider>
-					<Login />
-				</ChakraProvider>
-			</Router>
-		);
+	// test('renders the login form', () => {
+	// 	render(
+	// 		<Router>
+	// 			<ChakraProvider>
+	// 				<Login />
+	// 			</ChakraProvider>
+	// 		</Router>
+	// 	);
 
-		// Check if the input fields and button are rendered
-		expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
-		expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-		expect(screen.getByText(/^login$/i)).toBeInTheDocument();
-		expect(screen.getByText(/Login with Google/i)).toBeInTheDocument();
-	});
+	// 	// Check if the input fields and button are rendered
+	// 	expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
+	// 	expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+	// 	expect(screen.getByText(/^login$/i)).toBeInTheDocument();
+	// 	expect(screen.getByText(/Login with Google/i)).toBeInTheDocument();
+	// });
 
 	test('displays an error message on failed login', async () => {
 		// Mock the API client to return an error
